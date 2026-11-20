@@ -238,6 +238,21 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
 .prow .hx em{font-style:normal;display:inline-block;min-width:3.2em;text-align:right;color:#a39784}
 .prow:hover .hx{color:var(--paper)}
 .prow.done .hx{color:var(--gilt)}
+.pact{display:flex;gap:16px}
+.pact button{font-size:12px;letter-spacing:.12em;color:var(--dim);text-decoration:underline;text-decoration-color:#3a3229;text-underline-offset:4px}
+.pact button:hover{color:var(--paper);text-decoration-color:var(--gilt)}
+.pact button.strong{color:var(--gilt);text-decoration-color:var(--gilt)}
+.phint{margin:-4px 0 0;font-size:12.5px;line-height:1.7;color:#a39784}
+.pc.editing .prow{grid-template-columns:28px minmax(0,1fr) auto auto}
+.pc.editing .prow.tgt{background:#16120e;box-shadow:inset 2px 0 0 transparent;outline:1px solid #4b4134;outline-offset:0}
+.prow .pe{display:none;gap:4px}.pc.editing .prow .pe{display:flex}
+.prow .pe span{font-size:11.5px;letter-spacing:.06em;color:var(--dim);padding:6px 6px;border:1px solid #2a241d;border-radius:2px;line-height:1}
+.prow .pe span:hover{color:var(--paper);border-color:#4b4134}
+.prow .pe span.on{color:var(--gilt);border-color:#6b5a3e}
+.pc.editing .prow .nm small{display:none}
+.padd{align-self:flex-start;font-size:12.5px;letter-spacing:.1em;color:var(--dim);padding:6px 0}.padd:hover{color:var(--gilt)}
+.view.picking{cursor:crosshair}
+.loupe{position:absolute;z-index:4;width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,248,236,.9);box-shadow:0 4px 16px rgba(0,0,0,.6);pointer-events:none;transform:translate(-50%,-130%)}
 .toAtlas{align-self:flex-start;font-size:12px;letter-spacing:.12em;color:var(--dim)}.toAtlas:hover{color:var(--gilt)}
 /* 竹间色谱 */
 #atlasBtn{font-size:12px;letter-spacing:.16em;color:var(--dim);flex:none}#atlasBtn:hover{color:var(--paper)}
@@ -326,7 +341,7 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
 
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="文物详情">
   <div class="stage">
-    <div class="view" id="view"><img id="big" alt=""><div class="spin" id="spin" hidden></div>
+    <div class="view" id="view"><img id="big" alt=""><div class="loupe" id="loupe" hidden></div><div class="spin" id="spin" hidden></div>
       <button class="nav p" id="prevImg" aria-label="上一张"><svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg></button>
       <button class="nav n" id="nextImg" aria-label="下一张"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8"/></svg></button>
     </div>
@@ -336,7 +351,7 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
     <div class="tp"><span class="cno" id="cno"></span><button class="close" id="close" aria-label="关闭"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>
     <h3 id="lbName"></h3>
     <dl class="f" id="lbF"></dl>
-    <section class="pc" aria-label="器色"><div class="pch"><b>器色</b><button id="pcCard">存为配色卡</button></div><div class="pbar" id="lbBar"></div><div id="lbPal"></div><button class="toAtlas" id="toAtlas">在竹间色谱中看 →</button></section>
+    <section class="pc" aria-label="器色"><div class="pch"><b>器色</b><span class="pact" id="pAct"><button id="pcPick">取色</button><button id="pcCard">存为配色卡</button></span><span class="pact" id="pEdit" hidden><button id="pcAuto">恢复自动</button><button id="pcDone" class="strong">完成</button></span></div><p class="phint" id="pHint" hidden>先点一行选中要换的颜色，再点照片取色。</p><div class="pbar" id="lbBar"></div><div id="lbPal"></div><button class="padd" id="pcAdd" hidden>+ 添加一色</button><button class="toAtlas" id="toAtlas">在竹间色谱中看 →</button></section>
     <div class="frames" id="lbFrames"></div>
     <div class="step"><button id="prevObj"></button><button id="nextObj"></button></div>
   </aside>
@@ -498,7 +513,7 @@ let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(!ma
 
 /* lightbox */
 const lb=$('#lb'),big=$('#big'),vw_=$('#view');let cur=null,ci=0,lbOpen=false;
-function openLB(o,i=0){cur=o;ci=i;lbOpen=true;lb.classList.add('open');
+function openLB(o,i=0){if(editing)stopEdit();cur=o;ci=i;lbOpen=true;lb.classList.add('open');
   $('#cno').textContent='No. '+String(o.no).padStart(3,'0');$('#lbName').textContent=o.name;
   $('#lbF').innerHTML=`<dt>年代</dt><dd><button data-jump="era">${esc(o.era)}</button><small>${ERA_SPAN[o.era]||''}</small></dd><dt>类别</dt><dd><button data-jump="category">${esc(o.cat)}</button></dd><dt>收藏</dt><dd>${o.mus?`<button data-jump="museum">${esc(o.mus)}</button><small>${esc(o.city||'')}</small>`:'未注明'}</dd>${o.ex?`<dt>展览</dt><dd>${esc(o.ex)}</dd>`:''}<dt>色系</dt><dd><button data-jump="color">${esc(o.band)}</button></dd>`;
   renderPal(o);
@@ -521,7 +536,7 @@ function copyHex(t){const ok=()=>toast('已复制 '+t);if(navigator.clipboard&&n
   function legacy(){const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast(t)}a.remove()}}
 function renderPal(o){const op=opOf(o),pc=pcts(op.p);
   $('#lbBar').innerHTML=op.p.map(c=>`<i style="background:${c[0]};flex:${c[1]}"></i>`).join('');
-  $('#lbPal').innerHTML=op.p.map((c,k)=>`<button class="prow" data-hex="${c[0].toUpperCase()}" title="点击复制色值"><span class="sw" style="background:${c[0]}"></span><span class="nm">${esc(c[2]||'—')}${k===op.m?'<small>主色</small>':''}</span><span class="hx">${c[0].toUpperCase()}<em>${pc[k]}%</em></span></button>`).join('')}
+  $('#lbPal').innerHTML=op.p.map((c,k)=>`<button class="prow" data-hex="${c[0].toUpperCase()}" title="点击复制色值"><span class="sw" style="background:${c[0]}"></span><span class="nm">${esc(c[2]||'—')}${k===op.m?'<small>主色</small>':''}</span><span class="hx">${c[0].toUpperCase()}<em>${pc[k]}%</em></span><span class="pe"><span data-a="m" class="${k===op.m?'on':''}">主色</span><span data-a="x" aria-label="删掉这一色">×</span></span></button>`).join('')}
 $('#lbPal').addEventListener('click',e=>{const b=e.target.closest('.prow');if(!b)return;copyHex(b.dataset.hex);b.classList.add('done');setTimeout(()=>b.classList.remove('done'),1200)});
 
 const atlas=$('#atlas');let atlasOn=false,atlasBuilt=false;
@@ -553,19 +568,19 @@ async function makeCard(o){
   try{await loadPack(o);const src=bigSrc(o,o.imgs[0][0])||coverSrc(o);
     const [img,seal]=await Promise.all([loadImg(src),loadImg('assets/seal.png').catch(()=>null)]);
     const op=opOf(o),txt=o.name+op.p.map(c=>c[2]).join('')+(o.era||'')+(o.mus||'')+'竹间影像浑人主色';
-    await Promise.all(['600 54px "Noto Serif SC"','300 24px "Noto Serif SC"','300 20px "Noto Sans SC"','italic 400 24px "Cormorant Garamond"'].map(f=>document.fonts.load(f,txt).catch(()=>{})));
+    await Promise.all(['500 38px "Noto Serif SC"','600 38px "Noto Serif SC"','300 22px "Noto Serif SC"','300 20px "Noto Sans SC"','italic 400 24px "Cormorant Garamond"'].map(f=>document.fonts.load(f,txt).catch(()=>{})));
     const W=1080,H=1440,cv=$('#cardCv');cv.width=W;cv.height=H;const x=cv.getContext('2d');
     x.fillStyle='#0b0a08';x.fillRect(0,0,W,H);
     const PX=60,PY=60,PW=W-120,PH=800,ir=img.width/img.height,br=PW/PH;
     let dw=PW,dh=PH;if(ir>br)dh=PW/ir;else dw=PH*ir;
-    x.drawImage(img,PX+(PW-dw)/2,PY+(PH-dh)/2,dw,dh);
-    x.textBaseline='alphabetic';x.fillStyle='#ece3d2';fitText(x,o.name,'600 {}px "Noto Serif SC",serif',54,PW);x.fillText(o.name,PX,PY+PH+92);
-    x.fillStyle='#9a8f7d';x.font='300 24px "Noto Serif SC",serif';x.fillText([o.era,o.mus].filter(Boolean).join('  ·  '),PX,PY+PH+136);
-    const pc=pcts(op.p),n=op.p.length,g=14,cw=(PW-g*(n-1))/n,top=PY+PH+180,ch=150;
+    const off=(PH-dh)/2,B=PY+off+dh;x.drawImage(img,PX+(PW-dw)/2,PY+off,dw,dh);
+    x.textBaseline='alphabetic';x.fillStyle='#ece3d2';fitText(x,o.name,'500 {}px "Noto Serif SC",serif',38,PW);x.fillText(o.name,PX,B+80);
+    x.fillStyle='#9a8f7d';x.font='300 22px "Noto Serif SC",serif';x.fillText([o.era,o.mus].filter(Boolean).join('  ·  '),PX,B+118);
+    const pc=pcts(op.p),n=op.p.length,g=14,cw=(PW-g*(n-1))/n,top=B+160,ch=170;
     op.p.forEach((c,k)=>{const X=PX+k*(cw+g);x.fillStyle=c[0];x.fillRect(X,top,cw,ch);
       if(k===op.m){x.fillStyle='#c9a66b';x.fillRect(X,top+ch+8,cw,3)}
-      x.fillStyle='#ddd3c2';fitText(x,c[2]||'',' 400 {}px "Noto Serif SC",serif',26,cw);x.fillText(c[2]||'',X,top+ch+48);
-      x.fillStyle='#857b6d';x.font='300 20px "Noto Sans SC",sans-serif';x.fillText(c[0].toUpperCase(),X,top+ch+80);
+      x.fillStyle='#ece3d2';fitText(x,c[2]||'',' 600 {}px "Noto Serif SC",serif',38,cw);x.fillText(c[2]||'',X,top+ch+58);
+      x.fillStyle='#857b6d';x.font='300 21px "Noto Sans SC",sans-serif';x.fillText(c[0].toUpperCase(),X,top+ch+94);
       x.fillStyle=luma(c[0])>.5?'rgba(24,19,14,.72)':'rgba(255,248,236,.86)';x.font='300 26px "Noto Sans SC",sans-serif';x.textAlign='right';x.fillText(pc[k]+'%',X+cw-14,top+ch-16);x.textAlign='left'});
     const fy=H-64;if(seal)x.drawImage(seal,PX,fy-34,40,40*seal.height/seal.width);
     x.fillStyle='#cfc5b3';x.font='400 22px "Noto Serif SC",serif';x.fillText('竹间影像 · 竹间浑人',PX+56,fy);
@@ -580,6 +595,52 @@ $('#pcCard').onclick=()=>{if(cur)makeCard(cur)};
 let dlNS=null;if(window.claude&&claude.use)claude.use('downloads').then(n=>{dlNS=n}).catch(()=>{});
 $('#cardDl').addEventListener('click',e=>{if(!dlNS)return;e.preventDefault();const a=e.currentTarget;
   $('#cardCv').toBlob(b=>{dlNS.save({filename:a.download,data:b}).then(()=>toast('已保存配色卡'),err=>{if(err&&err.code==='declined')return;toast('这里无法下载，可长按或右键图片保存')})},'image/png')});
+
+/* 取色：点照片改颜色。主人保存后所有人可见，访客只在本次浏览里生效 */
+const CN=[["粉红","#ffb3a7"],["妃色","#ed5736"],["品红","#f00056"],["桃红","#f47983"],["海棠红","#db5a6b"],["石榴红","#f20c00"],["樱桃色","#c93756"],["银红","#f05654"],["大红","#ff2121"],["绛紫","#8c4356"],["绯红","#c83c23"],["胭脂","#9d2933"],["朱红","#ff4c00"],["丹","#ff4e20"],["彤","#f35336"],["茜色","#cb3a56"],["火红","#ff2d51"],["赫赤","#c91f37"],["嫣红","#ef7a82"],["洋红","#ff0097"],["炎","#ff3300"],["赤","#c3272b"],["绾","#a98175"],["枣红","#c32136"],["檀","#b36d61"],["殷红","#be002f"],["酡红","#dc3023"],["酡颜","#f9906f"],["鹅黄","#fff143"],["鸭黄","#faff72"],["樱草色","#eaff56"],["杏黄","#ffa631"],["杏红","#ff8c31"],["橘黄","#ff8936"],["橙黄","#ffa400"],["橘红","#ff7500"],["姜黄","#ffc773"],["缃色","#f0c239"],["橙色","#fa8c35"],["茶色","#b35c44"],["驼色","#a88462"],["昏黄","#c89b40"],["栗色","#60281e"],["棕色","#b25d25"],["棕绿","#827100"],["棕黑","#7c4b00"],["棕红","#9b4400"],["棕黄","#ae7000"],["赭","#9c5333"],["赭色","#955539"],["琥珀","#ca6924"],["褐色","#6e511e"],["枯黄","#d3b17d"],["黄栌","#e29c45"],["秋色","#896c39"],["秋香色","#d9b611"],["嫩绿","#bddd22"],["柳黄","#c9dd22"],["柳绿","#afdd22"],["竹青","#789262"],["葱黄","#a3d900"],["葱绿","#9ed900"],["葱青","#0eb83a"],["葱倩","#0eb840"],["青葱","#0aa344"],["油绿","#00bc12"],["绿沈","#0c8918"],["碧色","#1bd1a5"],["碧绿","#2add9c"],["青碧","#48c0a3"],["翡翠色","#3de1ad"],["草绿","#40de5a"],["青色","#00e09e"],["青翠","#00e079"],["青白","#c0ebd7"],["鸭卵青","#e0eee8"],["蟹壳青","#bbcdc5"],["鸦青","#424c50"],["绿色","#00e500"],["豆绿","#9ed048"],["豆青","#96ce54"],["石青","#7bcfa6"],["玉色","#2edfa3"],["缥","#7fecad"],["艾绿","#a4e2c6"],["松柏绿","#21a675"],["松花绿","#057748"],["松花色","#bce672"],["蓝","#44cef6"],["靛青","#177cb0"],["靛蓝","#065279"],["碧蓝","#3eede7"],["蔚蓝","#70f3ff"],["宝蓝","#4b5cc4"],["蓝灰色","#a1afc9"],["藏青","#2e4e7e"],["藏蓝","#3b2e7e"],["黛","#4a4266"],["黛绿","#426666"],["黛蓝","#425066"],["黛紫","#574266"],["紫色","#8d4bbb"],["紫酱","#815463"],["酱紫","#815476"],["紫檀","#4c221b"],["绀青绀紫","#003371"],["紫棠","#56004f"],["青莲","#801dae"],["群青","#4c8dae"],["雪青","#b0a4e3"],["丁香色","#cca4e3"],["藕色","#edd1d8"],["藕荷色","#e4c6d0"],["苍色","#75878a"],["苍翠","#519a73"],["苍黄","#a29b7c"],["苍青","#7397ab"],["苍黑","#395260"],["苍白","#d1d9e0"],["水色","#88ada6"],["水红","#f3d3e7"],["水绿","#d4f2e7"],["水蓝","#d2f0f4"],["淡青","#d3e0f3"],["湖蓝","#30dff3"],["湖绿","#25f8cb"],["精白","#ffffff"],["象牙白","#fffbf0"],["雪白","#f2fdff"],["月白","#d6ecf0"],["缟","#f2ecde"],["素","#e0f0e9"],["荼白","#f3f9f1"],["霜色","#e9f1f6"],["花白","#c2ccd0"],["鱼肚白","#fcefe8"],["莹白","#e3f9fd"],["灰色","#808080"],["牙色","#eedeb0"],["铅白","#f0f0f4"],["玄色","#622a1d"],["玄青","#3d3b4f"],["乌色","#725e82"],["乌黑","#392f41"],["漆黑","#161823"],["墨色","#50616d"],["墨灰","#758a99"],["黑色","#000000"],["缁色","#493131"],["煤黑","#312520"],["黧","#5d513c"],["黎","#75664d"],["黝","#6b6882"],["黝黑","#665757"],["黯","#41555d"],["赤金","#f2be45"],["金色","#eacd76"],["银白","#e9e7ef"],["老银","#bacac6"],["乌金","#a78e44"],["铜绿","#549688"]];
+const lab=h=>{let v=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(c=>c>.04045?((c+.055)/1.055)**2.4:c/12.92);
+  let X=(v[0]*.4124+v[1]*.3576+v[2]*.1805)/.95047,Y=v[0]*.2126+v[1]*.7152+v[2]*.0722,Z=(v[0]*.0193+v[1]*.1192+v[2]*.9505)/1.08883;
+  const f=t=>t>.008856?Math.cbrt(t):7.787*t+16/116;X=f(X);Y=f(Y);Z=f(Z);return [116*Y-16,500*(X-Y),200*(Y-Z)]};
+const CNL=CN.map(c=>lab(c[1]));
+const dE=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+const cnName=h=>{const L=lab(h);let j=0,d=1e9;CNL.forEach((c,i)=>{const e=dE(L,c);if(e<d){d=e;j=i}});return CN[j][0]};
+const hex2=(r,g,b)=>'#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+let fixDb=null,isOwner=false,editing=false,ed=null,tgt=0,px=null;
+function pixels(){return new Promise(ok=>{if(px&&px.src===big.src)return ok(px);if(!big.complete||!big.naturalWidth)return ok(null);
+  const k=Math.min(1,900/Math.max(big.naturalWidth,big.naturalHeight)),w=Math.round(big.naturalWidth*k),h=Math.round(big.naturalHeight*k);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(big,0,0,w,h);
+  try{px={src:big.src,w,h,d:x.getImageData(0,0,w,h).data};ok(px)}catch(e){ok(null)}})}
+function imgPoint(e){const r=big.getBoundingClientRect(),nr=big.naturalWidth/big.naturalHeight,br=r.width/r.height;
+  let w=r.width,h=r.height,x0=r.left,y0=r.top;if(nr>br){h=r.width/nr;y0+=(r.height-h)/2}else{w=r.height*nr;x0+=(r.width-w)/2}
+  const u=(e.clientX-x0)/w,v=(e.clientY-y0)/h;return u<0||u>1||v<0||v>1?null:[u,v]}
+function sampleAt(P,u,v){const cx=Math.round(u*(P.w-1)),cy=Math.round(v*(P.h-1));let r=0,g=0,b=0,n=0;
+  for(let y=cy-2;y<=cy+2;y++)for(let x=cx-2;x<=cx+2;x++){if(x<0||y<0||x>=P.w||y>=P.h)continue;const i=(y*P.w+x)*4;r+=P.d[i];g+=P.d[i+1];b+=P.d[i+2];n++}
+  return hex2(r/n,g/n,b/n)}
+function reshare(P){if(!P||!ed.p.length)return;const L=ed.p.map(c=>lab(c[0])),cnt=L.map(()=>0);
+  for(let i=0;i<P.d.length;i+=4*7){const q=lab(hex2(P.d[i],P.d[i+1],P.d[i+2]));let j=-1,d=16;L.forEach((l,k)=>{const e=dE(q,l);if(e<d){d=e;j=k}});if(j>=0)cnt[j]++}
+  const t=cnt.reduce((a,b)=>a+b,0);ed.p.forEach((c,k)=>c[1]=t?Math.max(cnt[k]/t,.01):1/ed.p.length)}
+function startEdit(){if(!cur)return;const op=opOf(cur);ed={p:op.p.map(c=>c.slice()),m:op.m};tgt=op.m;editing=true;unzoom();
+  $('.pc').classList.add('editing');vw_.classList.add('picking');$('#pAct').hidden=true;$('#pEdit').hidden=false;$('#pHint').hidden=false;drawEdit();pixels()}
+function stopEdit(){editing=false;ed=null;$('.pc').classList.remove('editing');vw_.classList.remove('picking');$('#pAct').hidden=false;$('#pEdit').hidden=true;$('#pHint').hidden=true;$('#pcAdd').hidden=true;$('#loupe').hidden=true}
+function drawEdit(){const o={op:ed,pal:[],share:[]};renderPal(o);[...$('#lbPal').children].forEach((b,k)=>b.classList.toggle('tgt',k===tgt));$('#pcAdd').hidden=ed.p.length>=5}
+$('#pcPick').onclick=startEdit;
+$('#pcAdd').onclick=()=>{ed.p.push(['#808080',.01,'']);tgt=ed.p.length-1;drawEdit();toast('点照片取这一色')};
+$('#pcAuto').onclick=async()=>{const o=cur;delete o.fix;o.op=o.op0||o.op;stopEdit();renderPal(o);if(o.op0===undefined)return;
+  if(fixDb&&isOwner){try{await fixDb.collection('palfix').doc(o.key).delete();toast('已恢复自动取色')}catch(e){toast('恢复失败，请稍后再试')}}else toast('已恢复自动取色');atlasBuilt=false};
+$('#pcDone').onclick=async()=>{const o=cur;const P=await pixels();reshare(P);ed.m=Math.min(ed.m,ed.p.length-1);
+  if(o.op0===undefined)o.op0=o.op;o.op={m:ed.m,p:ed.p.map(c=>[c[0],+c[1].toFixed(3),c[2]||cnName(c[0])])};stopEdit();renderPal(o);atlasBuilt=false;
+  if(fixDb&&isOwner){try{await fixDb.collection('palfix').doc(o.key).set({m:o.op.m,p:o.op.p.map(c=>({hex:c[0],s:c[1],cn:c[2]})),t:Date.now()});toast('已保存，所有人都会看到')}catch(e){toast('没能保存，请稍后再试')}}
+  else toast('已更新，可以存为配色卡')};
+$('#lbPal').addEventListener('click',e=>{if(!editing)return;const b=e.target.closest('.prow');if(!b)return;e.stopImmediatePropagation();const k=[...$('#lbPal').children].indexOf(b);
+  const act=e.target.closest('.pe span');if(act&&act.dataset.a==='m'){ed.m=k}else if(act&&act.dataset.a==='x'){if(ed.p.length>1){ed.p.splice(k,1);if(ed.m>=ed.p.length)ed.m=0;else if(ed.m>k)ed.m--;tgt=Math.min(tgt,ed.p.length-1)}}else tgt=k;drawEdit()},true);
+vw_.addEventListener('click',async e=>{if(!editing||e.target.closest('.nav'))return;e.stopImmediatePropagation();const pt=imgPoint(e);if(!pt)return;const P=await pixels();if(!P){toast('这张图暂时取不了色');return}
+  const h=sampleAt(P,pt[0],pt[1]);ed.p[tgt]=[h,ed.p[tgt]?ed.p[tgt][1]:.01,cnName(h)];drawEdit()},true);
+vw_.addEventListener('pointermove',e=>{if(!editing||!px||px.src!==big.src){$('#loupe').hidden=true;return}const pt=imgPoint(e),l=$('#loupe');if(!pt){l.hidden=true;return}
+  const r=vw_.getBoundingClientRect();l.hidden=false;l.style.left=(e.clientX-r.left)+'px';l.style.top=(e.clientY-r.top)+'px';l.style.background=sampleAt(px,pt[0],pt[1])});
+vw_.addEventListener('pointerleave',()=>{$('#loupe').hidden=true});
+(async()=>{if(!(window.claude&&claude.use))return;try{const [db,u]=await Promise.all([claude.use('db'),claude.use('user')]);fixDb=db;isOwner=u?await u.isOwner():false;if(!db)return;
+  const snap=await db.collection('palfix').get();snap.docs.forEach(d=>{const o=D.find(x=>x.key===d.id),v=d.data();if(!o||!v||!Array.isArray(v.p))return;if(o.op0===undefined)o.op0=o.op;
+    o.op={m:v.m|0,p:v.p.map(c=>[c.hex,c.s,c.cn])}});atlasBuilt=false;if(cur&&!editing)renderPal(cur);if(atlasOn)openAtlas()}catch(e){}})();
 function renderFilm(){const o=cur;$('#film').innerHTML=o.imgs.length<2?'':o.imgs.map((im,k)=>{const s=thumbSrc(o,im[0]);return `<button data-k="${k}" class="${k===ci?'cur':''}" aria-label="第 ${k+1} 张">${s?`<img src="${s}" alt="">`:''}</button>`}).join('')}
 function showImg(k,silent){const o=cur;ci=(k+o.imgs.length)%o.imgs.length;unzoom();
   [...$('#film').children].forEach((b,j)=>b.classList.toggle('cur',j===ci));
@@ -590,7 +651,7 @@ function showImg(k,silent){const o=cur;ci=(k+o.imgs.length)%o.imgs.length;unzoom
   const im=new Image();im.onload=()=>{big.src=s;big.classList.remove('fade');$('#spin').hidden=true};im.src=s}
 $('#film').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showImg(+b.dataset.k)});
 $('#prevImg').onclick=e=>{e.stopPropagation();showImg(ci-1)};$('#nextImg').onclick=e=>{e.stopPropagation();showImg(ci+1)};
-function closeLB(){lb.classList.remove('open');lbOpen=false;cur=null}
+function closeLB(){if(editing)stopEdit();lb.classList.remove('open');lbOpen=false;cur=null}
 $('#close').onclick=closeLB;
 $('#lbF').addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const o=cur;closeLB();setView(b.dataset.jump,true);setTimeout(()=>walkTo(o.x+o.w/2-hall.clientWidth/2),900)});
 addEventListener('keydown',e=>{if(!lbOpen)return;if(e.key==='Escape')closeLB();else if(e.key==='ArrowRight')showImg(ci+1);else if(e.key==='ArrowLeft')showImg(ci-1);else if(e.key===']')$('#nextObj').click();else if(e.key==='[')$('#prevObj').click()});
