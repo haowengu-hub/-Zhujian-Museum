@@ -293,9 +293,9 @@ $('#stats').innerHTML=[[D.length,'件文物'],[total.toLocaleString(),'帧影像
 
 /* image sources */
 const COV={},PK={},pkL={};
-const coverSrc=o=>LOCAL?`img/m/${o.cover[0]}.webp`:(PK[o.cover[0]]?'data:image/webp;base64,'+PK[o.cover[0]]:(COV[o.cover[0]]?'data:image/webp;base64,'+COV[o.cover[0]]:''));
+const coverSrc=o=>LOCAL?`img/h/${o.cover[0]}.webp`:(PK[o.cover[0]]?'data:image/webp;base64,'+PK[o.cover[0]]:(COV[o.cover[0]]?'data:image/webp;base64,'+COV[o.cover[0]]:''));
 const bigSrc=(o,id)=>LOCAL?`img/l/${id}.webp`:(PK[id]?'data:image/webp;base64,'+PK[id]:(id===o.cover[0]&&COV[id]?'data:image/webp;base64,'+COV[id]:''));
-const thumbSrc=(o,id)=>LOCAL?`img/m/${id}.webp`:bigSrc(o,id);
+const thumbSrc=(o,id)=>LOCAL?`img/s/${id}.webp`:bigSrc(o,id);
 function loadPack(o){if(LOCAL)return Promise.resolve();if(!pkL[o.key])pkL[o.key]=fetch(`p/${o.key}.json`).then(r=>r.json()).then(j=>Object.assign(PK,j)).catch(()=>{});return pkL[o.key]}
 
 /* exhibits */
