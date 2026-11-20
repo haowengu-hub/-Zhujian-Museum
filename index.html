@@ -573,6 +573,10 @@ async function makeCard(o){
 function closeCard(){$('#cardv').classList.remove('open')}
 $('#cardX').onclick=closeCard;$('#cardv').addEventListener('click',e=>{if(e.target.id==='cardv')closeCard()});
 $('#pcCard').onclick=()=>{if(cur)makeCard(cur)};
+/* inside claude.ai the page cannot download by itself: hand the file to the viewer's confirmation */
+let dlNS=null;if(window.claude&&claude.use)claude.use('downloads').then(n=>{dlNS=n}).catch(()=>{});
+$('#cardDl').addEventListener('click',e=>{if(!dlNS)return;e.preventDefault();const a=e.currentTarget;
+  $('#cardCv').toBlob(b=>{dlNS.save({filename:a.download,data:b}).then(()=>toast('已保存配色卡'),err=>{if(err&&err.code==='declined')return;toast('这里无法下载，可长按或右键图片保存')})},'image/png')});
 function renderFilm(){const o=cur;$('#film').innerHTML=o.imgs.length<2?'':o.imgs.map((im,k)=>{const s=thumbSrc(o,im[0]);return `<button data-k="${k}" class="${k===ci?'cur':''}" aria-label="第 ${k+1} 张">${s?`<img src="${s}" alt="">`:''}</button>`}).join('')}
 function showImg(k,silent){const o=cur;ci=(k+o.imgs.length)%o.imgs.length;unzoom();
   [...$('#film').children].forEach((b,j)=>b.classList.toggle('cur',j===ci));
