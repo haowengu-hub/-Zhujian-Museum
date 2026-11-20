@@ -276,9 +276,9 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
 .chip .cc{position:relative;aspect-ratio:1;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
 .chip .cc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s cubic-bezier(.22,.7,.12,1)}
 .chip:hover .cc img,.chip:focus-visible .cc img{opacity:1}
-.chip .cn{font-family:var(--f-display);font-size:14px;line-height:1.45;color:#ddd3c2;letter-spacing:.04em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.chip .cm{font-size:11.5px;color:var(--dim);letter-spacing:.06em;margin-top:-4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chip .cm em{font-variant-numeric:lining-nums;font-style:normal;font-family:var(--f-latin);font-size:13px;margin-left:6px}
+.chip .cnm{display:flex;align-items:baseline;justify-content:space-between;gap:6px;font-family:var(--f-display);font-weight:600;font-size:19px;line-height:1.25;color:#ece3d2;letter-spacing:.06em;white-space:nowrap}
+.chip .cnm em{font-style:normal;font-family:var(--f-body);font-weight:300;font-size:11px;letter-spacing:.04em;color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+.chip .cn{font-size:12px;line-height:1.5;color:#9a8f7d;letter-spacing:.04em;margin-top:-4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .chip.hl .cc{outline:1px solid var(--gilt);outline-offset:3px}
 .cardv{position:fixed;inset:0;z-index:110;background:rgba(5,4,3,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;opacity:0;pointer-events:none;transition:opacity .35s}
 .cardv.open{opacity:1;pointer-events:auto}
@@ -544,7 +544,7 @@ function buildAtlas(){atlasBuilt=true;
   const gs=BANDS.map(b=>({b,items:D.filter(o=>o.band===b[0]).sort((a,c)=>luma(mainOf(c)[0])-luma(mainOf(a)[0]))})).filter(g=>g.items.length);
   $('#aSub').textContent=`以器命色。这里的 ${D.length} 种颜色，都以拍下它的那件文物命名；色名取最接近的中国传统色。在电脑上把指针停在色块上，可以先看到原器；点开就进入这件文物。`;
   $('#ajump').innerHTML=gs.map(g=>`<button data-b="${g.b[0]}" style="color:${bandInk(g.b)}" aria-label="跳到${g.b[0]}">${g.b[0]}</button>`).join('');
-  $('#abody').innerHTML=gs.map(g=>`<section class="aband" id="ab-${g.b[0]}"><div class="bh"><b style="color:${bandInk(g.b)}">${g.b[0]}</b><span><i>${g.items.length}</i> 色 · ${g.b[1]}</span></div><div class="agrid">${g.items.map(o=>{const c=mainOf(o);return `<button class="chip" data-k="${esc(o.key)}"><span class="cc" style="background:${c[0]}"><img alt=""></span><span class="cn">${esc(o.name)}</span><span class="cm">${esc(c[2])}<em>${c[0].toUpperCase()}</em></span></button>`}).join('')}</div></section>`).join('')}
+  $('#abody').innerHTML=gs.map(g=>`<section class="aband" id="ab-${g.b[0]}"><div class="bh"><b style="color:${bandInk(g.b)}">${g.b[0]}</b><span><i>${g.items.length}</i> 色 · ${g.b[1]}</span></div><div class="agrid">${g.items.map(o=>{const c=mainOf(o);return `<button class="chip" data-k="${esc(o.key)}"><span class="cc" style="background:${c[0]}"><img alt=""></span><span class="cnm">${esc(c[2])}<em>${c[0].toUpperCase()}</em></span><span class="cn">${esc(o.name)}</span></button>`}).join('')}</div></section>`).join('')}
 function peek(b){const im=b&&b.querySelector('img');if(!im||im.getAttribute('src'))return;const o=D.find(x=>x.key===b.dataset.k);const s=o&&coverSrc(o);if(s)im.src=s}
 function openAtlas(key){if(!atlasBuilt)buildAtlas();stopTour();atlas.classList.add('open');atlasOn=true;
   atlas.querySelectorAll('.chip.hl').forEach(n=>n.classList.remove('hl'));
@@ -568,19 +568,19 @@ async function makeCard(o){
   try{await loadPack(o);const src=bigSrc(o,o.imgs[0][0])||coverSrc(o);
     const [img,seal]=await Promise.all([loadImg(src),loadImg('assets/seal.png').catch(()=>null)]);
     const op=opOf(o),txt=o.name+op.p.map(c=>c[2]).join('')+(o.era||'')+(o.mus||'')+'竹间影像浑人主色';
-    await Promise.all(['500 38px "Noto Serif SC"','600 38px "Noto Serif SC"','300 22px "Noto Serif SC"','300 20px "Noto Sans SC"','italic 400 24px "Cormorant Garamond"'].map(f=>document.fonts.load(f,txt).catch(()=>{})));
+    await Promise.all(['600 54px "Noto Serif SC"','400 26px "Noto Serif SC"','300 24px "Noto Serif SC"','300 20px "Noto Sans SC"','italic 400 24px "Cormorant Garamond"'].map(f=>document.fonts.load(f,txt).catch(()=>{})));
     const W=1080,H=1440,cv=$('#cardCv');cv.width=W;cv.height=H;const x=cv.getContext('2d');
     x.fillStyle='#0b0a08';x.fillRect(0,0,W,H);
     const PX=60,PY=60,PW=W-120,PH=800,ir=img.width/img.height,br=PW/PH;
     let dw=PW,dh=PH;if(ir>br)dh=PW/ir;else dw=PH*ir;
     const off=(PH-dh)/2,B=PY+off+dh;x.drawImage(img,PX+(PW-dw)/2,PY+off,dw,dh);
-    x.textBaseline='alphabetic';x.fillStyle='#ece3d2';fitText(x,o.name,'500 {}px "Noto Serif SC",serif',38,PW);x.fillText(o.name,PX,B+80);
-    x.fillStyle='#9a8f7d';x.font='300 22px "Noto Serif SC",serif';x.fillText([o.era,o.mus].filter(Boolean).join('  ·  '),PX,B+118);
-    const pc=pcts(op.p),n=op.p.length,g=14,cw=(PW-g*(n-1))/n,top=B+160,ch=170;
+    x.textBaseline='alphabetic';x.fillStyle='#ece3d2';fitText(x,o.name,'600 {}px "Noto Serif SC",serif',54,PW);x.fillText(o.name,PX,B+92);
+    x.fillStyle='#9a8f7d';x.font='300 24px "Noto Serif SC",serif';x.fillText([o.era,o.mus].filter(Boolean).join('  ·  '),PX,B+136);
+    const pc=pcts(op.p),n=op.p.length,g=14,cw=(PW-g*(n-1))/n,top=B+180,ch=150;
     op.p.forEach((c,k)=>{const X=PX+k*(cw+g);x.fillStyle=c[0];x.fillRect(X,top,cw,ch);
       if(k===op.m){x.fillStyle='#c9a66b';x.fillRect(X,top+ch+8,cw,3)}
-      x.fillStyle='#ece3d2';fitText(x,c[2]||'',' 600 {}px "Noto Serif SC",serif',38,cw);x.fillText(c[2]||'',X,top+ch+58);
-      x.fillStyle='#857b6d';x.font='300 21px "Noto Sans SC",sans-serif';x.fillText(c[0].toUpperCase(),X,top+ch+94);
+      x.fillStyle='#ddd3c2';fitText(x,c[2]||'',' 400 {}px "Noto Serif SC",serif',26,cw);x.fillText(c[2]||'',X,top+ch+48);
+      x.fillStyle='#857b6d';x.font='300 20px "Noto Sans SC",sans-serif';x.fillText(c[0].toUpperCase(),X,top+ch+80);
       x.fillStyle=luma(c[0])>.5?'rgba(24,19,14,.72)':'rgba(255,248,236,.86)';x.font='300 26px "Noto Sans SC",sans-serif';x.textAlign='right';x.fillText(pc[k]+'%',X+cw-14,top+ch-16);x.textAlign='left'});
     const fy=H-64;if(seal)x.drawImage(seal,PX,fy-34,40,40*seal.height/seal.width);
     x.fillStyle='#cfc5b3';x.font='400 22px "Noto Serif SC",serif';x.fillText('竹间影像 · 竹间浑人',PX+56,fy);
