@@ -234,7 +234,8 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
 .prow .sw{width:28px;height:28px;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
 .prow .nm{font-family:var(--f-display);font-size:15px;color:#ddd3c2;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prow .nm small{font-family:var(--f-body);font-size:11.5px;color:var(--gilt);letter-spacing:.1em;margin-left:8px}
-.prow .hx{font-variant-numeric:lining-nums tabular-nums;font-family:var(--f-latin);font-size:14px;color:var(--dim);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.prow .hx{font-variant-numeric:tabular-nums;font-family:var(--f-body);font-size:12.5px;color:var(--dim);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.prow .hx em{font-style:normal;display:inline-block;min-width:3.2em;text-align:right;color:#a39784}
 .prow:hover .hx{color:var(--paper)}
 .prow.done .hx{color:var(--gilt)}
 .toAtlas{align-self:flex-start;font-size:12px;letter-spacing:.12em;color:var(--dim)}.toAtlas:hover{color:var(--gilt)}
@@ -510,6 +511,7 @@ function openLB(o,i=0){cur=o;ci=i;lbOpen=true;lb.classList.add('open');
 }
 
 /* 器色 · 配色卡 · 竹间色谱 */
+const pcts=p=>{const t=p.reduce((a,c)=>a+c[1],0)||1,raw=p.map(c=>c[1]/t*100),f=raw.map(Math.floor);let left=100-f.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-f[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,left).forEach(([,i])=>f[i]++);return f};
 const opOf=o=>o.op&&o.op.p.length?o.op:{m:0,p:o.pal.map((c,k)=>[c,o.share[k],''])};
 const mainOf=o=>{const op=opOf(o);return op.p[op.m]||op.p[0]};
 const bandInk=b=>b[2]==='#3a342d'?'#6b6157':b[2];
@@ -517,9 +519,9 @@ const luma=h=>{const v=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);return .2
 function toast(t){const n=$('#toast');n.textContent=t;n.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>n.classList.remove('on'),1800)}
 function copyHex(t){const ok=()=>toast('已复制 '+t);if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,()=>legacy())}else legacy();
   function legacy(){const a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast(t)}a.remove()}}
-function renderPal(o){const op=opOf(o);
+function renderPal(o){const op=opOf(o),pc=pcts(op.p);
   $('#lbBar').innerHTML=op.p.map(c=>`<i style="background:${c[0]};flex:${c[1]}"></i>`).join('');
-  $('#lbPal').innerHTML=op.p.map((c,k)=>`<button class="prow" data-hex="${c[0].toUpperCase()}" title="点击复制色值"><span class="sw" style="background:${c[0]}"></span><span class="nm">${esc(c[2]||'—')}${k===op.m?'<small>主色</small>':''}</span><span class="hx">${c[0].toUpperCase()}</span></button>`).join('')}
+  $('#lbPal').innerHTML=op.p.map((c,k)=>`<button class="prow" data-hex="${c[0].toUpperCase()}" title="点击复制色值"><span class="sw" style="background:${c[0]}"></span><span class="nm">${esc(c[2]||'—')}${k===op.m?'<small>主色</small>':''}</span><span class="hx">${c[0].toUpperCase()}<em>${pc[k]}%</em></span></button>`).join('')}
 $('#lbPal').addEventListener('click',e=>{const b=e.target.closest('.prow');if(!b)return;copyHex(b.dataset.hex);b.classList.add('done');setTimeout(()=>b.classList.remove('done'),1200)});
 
 const atlas=$('#atlas');let atlasOn=false,atlasBuilt=false;
@@ -559,11 +561,12 @@ async function makeCard(o){
     x.drawImage(img,PX+(PW-dw)/2,PY+(PH-dh)/2,dw,dh);
     x.textBaseline='alphabetic';x.fillStyle='#ece3d2';fitText(x,o.name,'600 {}px "Noto Serif SC",serif',54,PW);x.fillText(o.name,PX,PY+PH+92);
     x.fillStyle='#9a8f7d';x.font='300 24px "Noto Serif SC",serif';x.fillText([o.era,o.mus].filter(Boolean).join('  ·  '),PX,PY+PH+136);
-    const n=op.p.length,g=14,cw=(PW-g*(n-1))/n,top=PY+PH+180,ch=150;
+    const pc=pcts(op.p),n=op.p.length,g=14,cw=(PW-g*(n-1))/n,top=PY+PH+180,ch=150;
     op.p.forEach((c,k)=>{const X=PX+k*(cw+g);x.fillStyle=c[0];x.fillRect(X,top,cw,ch);
       if(k===op.m){x.fillStyle='#c9a66b';x.fillRect(X,top+ch+8,cw,3)}
       x.fillStyle='#ddd3c2';fitText(x,c[2]||'',' 400 {}px "Noto Serif SC",serif',26,cw);x.fillText(c[2]||'',X,top+ch+48);
-      x.fillStyle='#857b6d';x.font='300 20px "Noto Sans SC",sans-serif';x.fillText(c[0].toUpperCase(),X,top+ch+80)});
+      x.fillStyle='#857b6d';x.font='300 20px "Noto Sans SC",sans-serif';x.fillText(c[0].toUpperCase(),X,top+ch+80);
+      x.fillStyle=luma(c[0])>.5?'rgba(24,19,14,.72)':'rgba(255,248,236,.86)';x.font='300 26px "Noto Sans SC",sans-serif';x.textAlign='right';x.fillText(pc[k]+'%',X+cw-14,top+ch-16);x.textAlign='left'});
     const fy=H-64;if(seal)x.drawImage(seal,PX,fy-34,40,40*seal.height/seal.width);
     x.fillStyle='#cfc5b3';x.font='400 22px "Noto Serif SC",serif';x.fillText('竹间影像 · 竹间浑人',PX+56,fy);
     x.fillStyle='#857b6d';x.font='italic 400 24px "Cormorant Garamond",serif';x.textAlign='right';x.fillText('Zhujian Images',W-PX,fy);x.textAlign='left';
