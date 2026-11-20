@@ -22,6 +22,10 @@ html,body{height:100%;background:var(--void);color:var(--paper)}
 body{margin:0;font-family:var(--f-body);font-weight:300;font-size:14px;line-height:1.7;overflow:hidden;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 :focus-visible{outline:1px solid var(--gilt);outline-offset:3px}
+::selection{background:rgba(201,166,107,.32);color:#fff8ec}
+input{caret-color:var(--gilt)}
+html{scrollbar-color:#3a3128 transparent}
+.count,.stats{font-variant-numeric:tabular-nums lining-nums}
 .app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:relative}
 
 /* top bar */
@@ -29,7 +33,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .brand{display:flex;align-items:center;gap:12px;font-family:var(--f-display);letter-spacing:.3em;font-size:14px;color:#cfc5b3;white-space:nowrap}
 .brand img{width:26px;height:auto}
 .brand .en{font-family:"Cormorant Garamond",serif;font-style:italic;letter-spacing:.05em;opacity:.6;margin-left:.5em}
-.intro .lead{font-size:1.15em;color:#e8dfcf}.intro p.en{font-family:"Cormorant Garamond",serif;font-style:italic;opacity:.6}
+.intro .lead{font-size:20px;line-height:1.75;color:#eee5d4;font-weight:400;text-wrap:balance;letter-spacing:.04em}.intro .lead span{white-space:nowrap}.intro p.en{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:17px;line-height:1.55;color:#a39784}
 .halls{display:flex;gap:2px;margin-inline:auto}
 .halls button{position:relative;padding:6px 14px 9px;font-family:var(--f-display);font-size:16px;letter-spacing:.2em;color:var(--dim);transition:color .4s}
 .halls button::after{content:"";position:absolute;left:50%;bottom:0;width:5px;height:5px;border-radius:50%;background:rgb(var(--lamp));transform:translateX(-50%) scale(0);box-shadow:0 0 10px 2px rgba(var(--lamp),.6);transition:transform .4s}
@@ -67,7 +71,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .plate{position:absolute;left:0;top:100%;margin-top:calc(var(--ph)*.26 + 6px);width:max(100%,180px);display:flex;gap:12px;opacity:calc(.3 + var(--f)*.7);transition:opacity .3s}
 .plate .no{font-family:var(--f-latin);font-size:13px;color:var(--gilt);padding-top:2px;letter-spacing:.06em}
 .plate b{display:block;font-family:var(--f-display);font-weight:400;font-size:15px;line-height:1.45;color:var(--paper);letter-spacing:.04em}
-.plate span{display:block;font-size:11.5px;color:var(--dim);letter-spacing:.06em}
+.plate span{display:block;font-size:12px;color:#9a8f7d;letter-spacing:.06em;margin-top:2px}
 .wallp{position:absolute;top:0;height:100%;display:flex;align-items:center;gap:18px;pointer-events:none}
 .wallp .v{writing-mode:vertical-rl;font-family:var(--f-display);font-weight:900;letter-spacing:.18em;line-height:1;color:var(--paper)}
 .wallp .info{writing-mode:vertical-rl;font-size:12.5px;letter-spacing:.3em;color:var(--dim);line-height:2.2;max-height:70%}
@@ -78,16 +82,17 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 
 
 /* intro */
-.intro{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:clamp(28px,4vw,64px);padding-left:max(48px,env(safe-area-inset-left,0px))}
+.intro{position:absolute;z-index:2;left:0;top:0;height:100%;display:flex;align-items:center;gap:clamp(28px,4vw,64px);padding-left:max(48px,env(safe-area-inset-left,0px))}
 .intro .t{writing-mode:vertical-rl;font-family:var(--f-display);font-weight:900;font-size:clamp(64px,11vh,128px);letter-spacing:.12em;line-height:1.08;margin:0}
 .intro .sig{height:min(38vh,320px);width:auto;opacity:.9}
-.intro .txt{display:flex;flex-direction:column;gap:22px;max-width:25em}
+.intro .txt{display:flex;flex-direction:column;gap:18px;max-width:27em}
 .intro .eb{font-size:12px;letter-spacing:.34em;color:var(--dim)}
 .intro .eb b{color:var(--gilt);font-weight:400}
-.intro p{font-family:var(--f-display);font-weight:300;font-size:16px;line-height:2.1;color:#cbc1af;margin:0}
-.stats{display:flex;gap:28px;flex-wrap:wrap;border-top:1px solid #241f19;padding-top:18px}
-.stats b{display:block;font-family:var(--f-latin);font-weight:400;font-size:36px;line-height:1}
-.stats span{font-size:11px;letter-spacing:.2em;color:var(--dim)}
+.intro p{font-family:var(--f-display);font-weight:300;font-size:16px;line-height:1.95;color:#c9bfad;margin:0;text-wrap:pretty}
+.intro .lead{margin-bottom:8px}
+.stats{display:flex;align-items:baseline;gap:0 .9em;flex-wrap:wrap;border-top:1px solid #2a241d;padding-top:16px;margin-top:6px;font-family:var(--f-display);font-size:13px;letter-spacing:.12em;color:#a39784}
+.stats b{font-family:var(--f-latin);font-weight:500;font-size:20px;letter-spacing:.02em;color:var(--paper);margin-right:.3em}
+.stats i{font-style:normal;color:#4a4036}
 .go{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:.3em;color:var(--dim)}
 .go i{display:block;width:80px;height:1px;background:linear-gradient(90deg,var(--gilt),transparent);animation:go 2.4s ease-in-out infinite;transform-origin:left}
 @keyframes go{0%{transform:scaleX(.2);opacity:.3}60%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
@@ -205,9 +210,9 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
   .halls{order:3;width:100%;justify-content:space-between;margin:0}
   .halls button{font-size:15px;letter-spacing:.12em;padding:6px 6px 9px}
   .tools{margin-left:auto}.search input{width:7.5em}
-  .intro{flex-wrap:wrap;align-content:center;gap:16px 22px;padding-right:20px;width:100vw}
-  .intro .t{font-size:56px}.intro .sig{height:150px}.intro .txt{max-width:100%;flex-basis:100%}
-  .intro p{font-size:14px;line-height:1.9}.stats{gap:18px}.stats b{font-size:26px}
+  .intro{flex-wrap:wrap;align-content:flex-start;align-items:flex-end;gap:14px 16px;padding:28px 22px 40px 22px;width:100vw;overflow-y:auto}
+  .intro .t{writing-mode:horizontal-tb;font-size:44px;letter-spacing:.08em;line-height:1.1}.intro .sig{height:112px;width:auto}.intro .txt{max-width:100%;flex-basis:100%;gap:14px}
+  .intro .lead{font-size:18px}.intro p{font-size:15px;line-height:1.9}.intro p.en{font-size:15px}.stats b{font-size:18px}
 .tourb span{display:none}
   .lb{grid-template-columns:1fr;grid-template-rows:minmax(0,60%) minmax(0,40%)}
   .stage{padding:calc(env(safe-area-inset-top,0px) + 10px) 6px 8px}
@@ -242,8 +247,7 @@ dl.f dd button:hover{text-decoration-color:var(--gilt)}
         <h1 class="t">竹间影像</h1>
         <img class="sig" src="assets/sign.png" alt="竹间浑人">
         <div class="txt">
-          <div class="eb"><b>Zhujian Images</b> &nbsp;竹间浑人的文物摄影</div>
-          <p class="lead">一个人，一台相机，把走过的博物馆拍成一座馆。</p><p>这里收着我在六十多家博物馆里拍下的四百余件文物，从新石器的玉、商周的青铜，到明清的瓷与金银，也有散落在海外馆里的中国器物。每一件都是我站在展柜前，等光、找角度，一张张拍下来的。可以按颜色、类别、年代、博物馆来逛，也可以打开「行迹」，看它们在地图上的位置，再一层层往下，看到同一个年代里各地留下了什么。</p><p class="en">An online museum of cultural relics photographed in person by Zhujian Hunren — more than four hundred objects from over sixty museums in China and abroad.</p>
+                    <p class="lead">一个人，一台相机，<span>把走过的博物馆</span><span>拍成一座馆。</span></p><p>这里收着我在六十多家博物馆里拍下的四百余件文物，从新石器的玉、商周的青铜，到明清的瓷与金银，也有散落在海外馆里的中国器物。每一件都是我站在展柜前，等光、找角度，一张张拍下来的。</p><p>可以按颜色、类别、年代、博物馆来逛，也可以打开「行迹」，看它们在地图上的位置，再一层层往下，看到同一个年代里各地留下了什么。</p><p class="en">An online museum of cultural relics photographed in person by Zhujian Hunren — more than four hundred objects from over sixty museums in China and abroad.</p>
           <div class="stats" id="stats"></div>
           <div class="go"><i></i>向右前行</div>
         </div>
@@ -289,7 +293,7 @@ const BANDS=[['赤','朱砂 · 霁红 · 剔红','#a3362a'],['金','金 · 鎏�
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 D.forEach(o=>{o.q=[o.name,o.cat,o.era,o.mus,o.city,o.ex,o.band].join(' ').toLowerCase();o.cover=o.imgs[0];o.ar=Math.min(Math.max(o.cover[1]/o.cover[2],.55),1.75)});
 const total=D.reduce((a,o)=>a+(o.n||o.imgs.length),0);
-$('#stats').innerHTML=[[D.length,'件文物'],[total.toLocaleString(),'帧影像'],[new Set(D.map(o=>o.mus).filter(Boolean)).size,'处收藏地']].map(([a,b])=>`<div><b>${a}</b><span>${b}</span></div>`).join('');
+$('#stats').innerHTML=[[D.length,'件文物'],[total.toLocaleString(),'帧影像'],[new Set(D.map(o=>o.mus).filter(Boolean)).size,'处收藏地']].map(([a,b])=>`<span><b>${a}</b>${b}</span>`).join('<i>·</i>');
 
 /* image sources */
 const COV={},PK={},pkL={};
