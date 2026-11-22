@@ -649,7 +649,8 @@ function openLB(o,i=0){if(editing)stopEdit();cur=o;ci=i;lbOpen=true;lb.classList
 
 /* 器色 · 配色卡 · 竹间色谱 */
 const pcts=p=>{const t=p.reduce((a,c)=>a+c[1],0)||1,raw=p.map(c=>c[1]/t*100),f=raw.map(Math.floor);let left=100-f.reduce((a,b)=>a+b,0);raw.map((v,i)=>[v-f[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,left).forEach(([,i])=>f[i]++);return f};
-const opOf=o=>o.op&&o.op.p.length?o.op:{m:0,p:o.pal.map((c,k)=>[c,o.share[k],''])};
+const mergeOp=op=>{const out=[];op.p.forEach((c,i)=>{const L=lab(c[0]);const t=out.find(x=>x.c[2]===c[2]||Math.hypot(x.L[0]-L[0],x.L[1]-L[1],x.L[2]-L[2])<14);if(t){t.c[1]+=c[1];if(i===op.m)t.main=true}else out.push({c:[c[0],c[1],c[2]],L,main:i===op.m})});return {m:Math.max(0,out.findIndex(x=>x.main)),p:out.map(x=>x.c)}};
+const opOf=o=>{if(o.op&&o.op.p.length){if(o.op0!==undefined)return o.op;if(o._opk!==o.op){o._opk=o.op;o._opm=mergeOp(o.op)}return o._opm}return {m:0,p:o.pal.map((c,k)=>[c,o.share[k],''])}};
 const mainOf=o=>{const op=opOf(o);return op.p[op.m]||op.p[0]};
 const bandInk=b=>b[2]==='#3a342d'?'#6b6157':b[2];
 const luma=h=>{const v=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255);return .2126*v[0]+.7152*v[1]+.0722*v[2]};
