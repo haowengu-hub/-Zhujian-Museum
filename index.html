@@ -419,6 +419,37 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
   .plate b{font-size:15px}
   .side h3{font-size:22px}
 }
+
+/* 总领页 + 各展厅前言 */
+.home{grid-row:2;grid-column:1;min-height:0;overflow-y:auto;display:flex;align-items:safe center;justify-content:center;padding:32px max(32px,env(safe-area-inset-right,0px)) 40px max(32px,env(safe-area-inset-left,0px))}
+.hin{display:grid;grid-template-columns:auto minmax(0,27em) minmax(240px,300px);align-items:center;gap:clamp(28px,4vw,64px);max-width:1240px;width:100%}
+.hid{display:flex;align-items:center;gap:clamp(20px,3vw,40px)}
+.home .t{writing-mode:vertical-rl;font-family:var(--f-display);font-weight:900;font-size:clamp(64px,11vh,128px);letter-spacing:.04em;line-height:1.08;margin:0}
+.home .sig{height:min(38vh,320px);width:auto;opacity:.9}
+.home .txt{display:flex;flex-direction:column;gap:18px}
+.home p{font-family:var(--f-display);font-weight:300;font-size:16px;line-height:1.9;color:var(--ink2);margin:0;text-wrap:pretty}
+.home .lead{font-size:21px;line-height:1.75;color:#eee5d4;font-weight:400;text-wrap:balance;margin-bottom:8px}.home .lead span{white-space:nowrap}
+.home p.en{font-size:14px;line-height:1.7;color:var(--dim)}
+.hlist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.hlist button{display:grid;grid-template-columns:4.6em minmax(0,1fr) auto;align-items:baseline;gap:12px;padding:14px 2px;border-bottom:1px solid var(--line2);text-align:left}
+.hlist b{white-space:nowrap;font-family:var(--f-display);font-weight:600;font-size:19px;letter-spacing:.04em;color:var(--paper)}
+.hlist span{font-size:13px;color:var(--dim)}
+.hlist i{font-style:normal;font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums}
+.hlist button:hover b{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:6px}
+.hlist button:hover span{color:var(--ink2)}
+.brand{cursor:pointer}
+.intro.pref .t{font-size:clamp(56px,10vh,112px)}
+.intro.pref .txt{max-width:24em}
+.intro.pref .stats button{font-size:13px;color:var(--paper);text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:5px;margin-left:.4em}
+@media(max-width:1100px) and (min-width:761px){.brand .en{display:none}.top{gap:10px 22px}.halls button{padding:6px 8px 8px}.halls button::after{left:8px;right:8px}.search input{width:7em}}
+@media(max-width:960px){.hin{grid-template-columns:auto minmax(0,1fr)}.hlist{grid-column:1/-1}}
+@media(max-width:760px){
+  .home{display:block;padding:24px 20px 40px}.home[hidden]{display:none}
+  .hin{grid-template-columns:1fr;gap:22px}
+  .hid{gap:14px;align-items:flex-end}.home .t{writing-mode:horizontal-tb;font-size:44px;line-height:1.1}.home .sig{height:112px}
+  .home .lead{font-size:18px}.home p{font-size:15px}
+  .intro.pref .t{writing-mode:horizontal-tb;font-size:40px;flex-basis:100%}
+}
 @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
 </style>
 
@@ -442,12 +473,11 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
   <div class="hall" id="hall" tabindex="0" aria-label="展厅，可左右滑动">
     <div class="track" id="track">
       <div class="ceil" id="ceil"></div>
-      <section class="intro" id="intro">
-        <h1 class="t">竹间影像</h1>
-        <img class="sig" src="assets/sign.png" alt="竹间浑人">
+      <section class="intro pref" id="intro">
+        <h1 class="t" id="pT"></h1>
         <div class="txt">
-                    <p class="lead">一个人，一台相机，<span>把走过的博物馆</span><span>拍成一座馆。</span></p><p>这里收着我在六十多家博物馆里拍下的四百余件文物，从新石器的玉、商周的青铜，到明清的瓷与金银，也有散落在海外馆里的中国器物。每一件都是我站在展柜前，等光、找角度，一张张拍下来的。</p><p>可以按颜色、类别、年代、博物馆来逛，也可以打开「行迹」，看它们在地图上的位置，再一层层往下，看到同一个年代里各地留下了什么。</p><p class="en">An online museum of cultural relics photographed in person by Zhujian Hunren — more than four hundred objects from over sixty museums in China and abroad.</p>
-          <div class="stats" id="stats"></div>
+          <p class="lead" id="pLead"></p><p id="pBody"></p>
+          <div class="stats" id="pStats"></div>
           <div class="go"><i></i>向右滑动，开始参观</div>
         </div>
       </section>
@@ -455,6 +485,16 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
     </div>
     <div class="empty" id="empty" hidden>没有找到这件文物</div>
   </div>
+  <section class="home" id="home" hidden>
+    <div class="hin">
+      <div class="hid"><h1 class="t">竹间影像</h1><img class="sig" src="assets/sign.png" alt="竹间浑人"></div>
+      <div class="txt">
+        <p class="lead">一个人，一台相机，<span>把走过的博物馆</span><span>拍成一座馆。</span></p><p>这里收着我在六十多家博物馆里拍下的四百余件文物，从新石器的玉、商周的青铜，到明清的瓷与金银，也有散落在海外馆里的中国器物。每一件都是我站在展柜前，等光、找角度，一张张拍下来的。</p><p>馆里分六个展厅，可以按颜色、类别、工艺、年代、博物馆来逛，也可以打开「行迹」，在地图上看它们从哪里来。</p><p class="en">An online museum of cultural relics photographed in person by Zhujian Hunren — more than four hundred objects from over sixty museums in China and abroad.</p>
+        <div class="stats" id="stats"></div>
+      </div>
+      <nav class="hlist" id="hlist" aria-label="展厅导览"></nav>
+    </div>
+  </section>
   <div class="mapv" id="mapv" hidden>
     <iframe id="xj" title="行迹" allow="fullscreen"></iframe>
   </div>
@@ -628,6 +668,8 @@ line.addEventListener('pointerup',()=>{railDrag=false;setTimeout(snap,50)});
 /* switching halls */
 let mapOn=false;
 function setView(v,animate){
+  if(v==='home'){showHome();return}
+  const wasHome=homeOn;homeOn=false;$('#home').hidden=true;if(v!=='map')renderPref(v);if(wasHome)animate=false;
   if(v==='map'){mapOn=true;document.querySelectorAll('.halls button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v==='map'));try{localStorage.setItem('zj-hall','map')}catch(e){}
     if(!order.length)layout(false);hall.hidden=true;$('#rail').hidden=true;$('#mapv').hidden=false;const f=$('#xj');if(!f.getAttribute('src'))f.src='xingji.html';return}
   if(!['color','category','craft','era','museum'].includes(v))v='color';
@@ -852,9 +894,32 @@ $('#mapv').addEventListener('keydown',e=>{if(e.key==='Enter'){const d=e.target.c
 
 /* look */
 try{const lk=new URLSearchParams(location.search).get('look')||(location.hash.match(/look([abc])/)||[])[1];if(lk)document.documentElement.dataset.look=lk}catch(e){}
+
+/* 总领页与各展厅前言 */
+const PREF={
+  color:{t:'颜色',lead:'先看颜色。',body:'每件文物按它最主要的颜色归入十个色系，从赤、金、缃、赭，到青、蓝、紫，再到素、苍、玄。同一面墙上，霁红的瓶和剔红的盒挨在一起，青铜的锈和青瓷的釉也会碰面。想看每一种颜色叫什么，可以打开竹间色谱。',
+    st:()=>[[new Set(D.map(o=>o.band)).size,'个色系'],[D.length,'种颜色']],extra:'<button data-atlas="1">打开竹间色谱</button>'},
+  category:{t:'类别',lead:'按材质分门别类。',body:'青铜、玉器、陶瓷、金银、漆木、珐琅、织绣、书画、石刻、古建……一共十二类。每一类里从早到晚排，走完一面墙，大致就是这门手艺的一部简史。',
+    st:()=>[[new Set(D.map(o=>o.cat)).size,'类'],[D.length,'件']]},
+  craft:{t:'工艺',lead:'看它是怎么做出来的。',body:'同样是金，可以掐丝、累丝、鎏金、錾刻；同样是瓷，可以青花、斗彩、粉彩、单色釉。这里按做法来分，每面墙上写着这门工艺的要点。器名里看不出做法的，按材质归到范铸、琢玉、烧造这些基本工艺里。',
+    st:()=>[[new Set(D.map(o=>craftsOf(o)[0])).size,'种工艺'],[D.length,'件']]},
+  era:{t:'年代',lead:'顺着时间往下走。',body:'从新石器时代的玉，到商周青铜、汉唐金银、宋元瓷器，一直到明清与近现代。同一个时代里，不同材质放在一起，看那个时候的人在用什么、喜欢什么。',
+    st:()=>[[new Set(D.map(o=>o.era)).size,'个时代'],[D.length,'件']]},
+  museum:{t:'博物馆',lead:'按收藏地走一圈。',body:'先国内，再海外，最后是特展。每家馆按我在那里拍到的件数排，件数多的在前。也可以打开「行迹」，在地图上看这些馆在哪里。',
+    st:()=>{const m=new Map();D.forEach(o=>{if(o.mus)m.set(o.mus,!!o.abroad)});const a=[...m.values()].filter(Boolean).length;return [[m.size,'处收藏地'],[m.size-a,'家在国内'],[a,'家在海外']]}}};
+function renderPref(v){const p=PREF[v];if(!p)return;$('#pT').textContent=p.t;$('#pLead').textContent=p.lead;$('#pBody').textContent=p.body;
+  $('#pStats').innerHTML=p.st().map(([a,b])=>`<span><b>${a}</b>${b}</span>`).join('')+(p.extra||'')}
+$('#pStats').addEventListener('click',e=>{if(e.target.closest('[data-atlas]'))openAtlas()});
+const HL=[['color','颜色',()=>`${new Set(D.map(o=>o.band)).size} 个色系，以器命色`],['category','类别',()=>`${new Set(D.map(o=>o.cat)).size} 类材质`],['craft','工艺',()=>`${new Set(D.map(o=>craftsOf(o)[0])).size} 种做法`],['era','年代',()=>'新石器时代至近现代'],['museum','博物馆',()=>`${new Set(D.map(o=>o.mus).filter(Boolean)).size} 处收藏地`],['map','行迹',()=>'在地图上看它们从哪里来']];
+function renderHome(){$('#hlist').innerHTML=HL.map(([v,t,d])=>`<button data-go="${v}"><b>${t}</b><span>${d()}</span><i>→</i></button>`).join('')}
+let homeOn=false;
+function showHome(){homeOn=true;mapOn=false;stopTour();renderHome();$('#count').textContent=D.length;hall.hidden=true;$('#rail').hidden=true;$('#mapv').hidden=true;$('#toc').hidden=true;$('#home').hidden=false;
+  document.querySelectorAll('.halls button').forEach(b=>b.setAttribute('aria-pressed','false'));try{localStorage.setItem('zj-hall','home')}catch(e){}}
+$('#hlist').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;setView(b.dataset.go,false)});
+$('.brand').addEventListener('click',showHome);
 /* boot */
-let init='color';try{init=localStorage.getItem('zj-hall')||init}catch(e){}
-const h=location.hash.slice(1);if(['color','category','craft','era','museum','map'].includes(h))init=h;
+let init='home';try{init=localStorage.getItem('zj-hall')||init}catch(e){}
+const h=location.hash.slice(1);if(['home','color','category','craft','era','museum','map'].includes(h))init=h;else if(!h)init='home';
 addEventListener('message',e=>{const f=document.getElementById('xj');if(!f||e.source!==f.contentWindow||!e.data||!e.data.zjOpen)return;const o=(typeof order!=='undefined'&&order.find?order.find(x=>x.key===e.data.zjOpen):null)||D.find(x=>x.key===e.data.zjOpen);if(o)openLB(o)});
 const go=()=>{setView(init,false);const m=h.match(/^o(\d+)$/);if(m){const o=D.find(o=>o.no===+m[1]);if(o)setTimeout(()=>openLB(o),300)}};
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
