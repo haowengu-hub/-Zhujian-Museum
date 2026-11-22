@@ -450,6 +450,20 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
   .home .lead{font-size:18px}.home p{font-size:15px}
   .intro.pref .t{writing-mode:horizontal-tb;font-size:40px;flex-basis:100%}
 }
+
+/* 前言索引 */
+.pidx{align-self:center;display:grid;grid-template-columns:minmax(180px,220px);gap:2px 24px;border-left:1px solid var(--line);padding-left:clamp(24px,3vw,44px)}
+.pidx.two{grid-template-columns:repeat(2,minmax(170px,210px))}
+.pidx button{display:grid;grid-template-columns:40px minmax(0,1fr);align-items:center;gap:12px;padding:7px 0;text-align:left}
+.pidx .th{width:40px;height:40px;display:block;overflow:hidden;border-radius:1px}
+.pidx .th img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;transition:opacity .25s}
+.pidx .sw{width:22px;height:22px;margin:9px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.pidx b{display:block;font-family:var(--f-display);font-weight:500;font-size:15px;line-height:1.35;color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pidx small{display:block;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums}
+.pidx button:hover b{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:5px}
+.pidx button:hover .th img{opacity:1}
+.intro .pnote{grid-column:1/-1;margin:8px 0 0;font-family:var(--f-body);font-size:12px;line-height:1.5;color:var(--dim)}
+@media(max-width:760px){.pidx,.pidx.two{flex-basis:100%;border-left:0;border-top:1px solid var(--line);padding:14px 0 0;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 14px}}
 @media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important;animation:none!important}}
 </style>
 
@@ -480,6 +494,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
           <div class="stats" id="pStats"></div>
           <div class="go"><i></i>向右滑动，开始参观</div>
         </div>
+        <nav class="pidx" id="pIdx" aria-label="本厅索引"></nav>
       </section>
       <div class="floor" id="floor"></div>
     </div>
@@ -559,7 +574,7 @@ D.forEach((o,i)=>{
   track.appendChild(el);o.el=el;o.img=el.querySelector('img');o.img.onload=()=>o.img.classList.add('ok');
 });
 function setImg(o){const s=coverSrc(o);if(s&&o.img.getAttribute('src')!==s)o.img.src=s}
-if(!LOCAL){for(let b=0;b<4;b++)fetch(`c${b}.json`).then(r=>r.json()).then(j=>{Object.assign(COV,j);D.forEach(o=>{if(o.near)setImg(o)})}).catch(()=>{})}
+if(!LOCAL){for(let b=0;b<4;b++)fetch(`c${b}.json`).then(r=>r.json()).then(j=>{Object.assign(COV,j);D.forEach(o=>{if(o.near)setImg(o)});fillIdx()}).catch(()=>{})}
 
 const CRAFT=[["掐丝珐琅",["掐丝珐琅","景泰蓝"],"铜胎掐丝 · 填釉焙烧"],["画珐琅",["画珐琅"],"胎上直接彩绘珐琅"],["錾胎珐琅",["錾胎"],"錾刻凹槽 · 填珐琅"],["珐琅彩",["珐琅彩"],"瓷胎画珐琅"],["点翠",["点翠"],"翠鸟羽毛贴饰"],["累丝",["累丝","花丝"],"金银细丝盘绕焊接"],["掐丝",["掐丝"],"金银丝掐成纹样"],["错金银",["错金","错银"],"金银丝片嵌入铜器"],["鎏金",["鎏金"],"金汞齐涂饰 · 烘烤"],["镶嵌",["镶","嵌"],"宝石 · 松石 · 玉嵌饰"],["青花",["青花"],"钴料釉下彩"],["釉里红",["釉里红"],"铜红釉下彩"],["斗彩",["斗彩"],"釉下青花 · 釉上彩相斗"],["五彩",["五彩"],"釉上多色彩绘"],["粉彩",["粉彩"],"玻璃白打底 · 渲染"],["素三彩·三彩",["三彩"],"低温多色釉"],["剔红·雕漆",["剔红","剔黑","剔彩","剔犀","雕漆"],"层层髹漆 · 剔刻"],["螺钿",["螺钿"],"贝壳薄片嵌饰"],["描金",["描金","泥金"],"漆地或瓷上描金"],["彩绘",["彩绘","漆绘","绘"],"颜料绘饰"],["缂丝",["缂丝"],"通经断纬"],["刺绣",["绣"],"针线绣制"],["织锦",["锦"],"多色经纬显花"],["透雕·镂空",["透雕","镂空","镂雕","透空"],"镂穿成纹"],["刻划·印花",["暗花","刻花","划花","印花","锥刻","轧道"],"刻 · 划 · 印 · 暗花"],["浮雕·圆雕",["浮雕","圆雕","高浮雕"],"起地雕刻"],["錾刻",["錾"],"錾子刻花"],["单色釉",["釉"],"一色到底"]],CRAFT_DEF={"青铜":"范铸","玉器":"琢玉","石刻造像":"石雕","书画文献":"书画","古建筑":"营造","古建壁画":"营造","织绣":"织造","金银":"金银细工","漆木":"髹漆","陶瓷":"烧造","珐琅":"珐琅","杂项珍玩":"其他"},CRAFT_DDESC={"范铸":"陶范铸造","琢玉":"砣具琢磨","石雕":"凿刻石材","书画":"笔墨纸绢","营造":"木构 · 砖瓦 · 琉璃","织造":"丝麻织作","金银细工":"锤揲 · 錾刻 · 焊接","髹漆":"漆木胎髹涂","烧造":"窑火烧成","珐琅":"","其他":""};
 /* 工艺：从器名里认出来（掐丝、镶嵌、鎏金……），可在挑选页手动改；认不出的按类别给一个基本工艺 */
@@ -907,7 +922,19 @@ const PREF={
     st:()=>[[new Set(D.map(o=>o.era)).size,'个时代'],[D.length,'件']]},
   museum:{t:'博物馆',lead:'这些馆，我都在展柜前站过。',body:'国内在前，海外在后，特展单列。每家馆按我在那里拍到的件数排，拍得多的在前。想看它们在地图上的位置，可以去「行迹」。',
     st:()=>{const m=new Map();D.forEach(o=>{if(o.mus)m.set(o.mus,!!o.abroad)});const a=[...m.values()].filter(Boolean).length;return [[m.size,'处收藏地'],[m.size-a,'家在国内'],[a,'家在海外']]}}};
-function renderPref(v){const p=PREF[v];if(!p)return;$('#pT').textContent=p.t;$('#pLead').textContent=p.lead;$('#pBody').textContent=p.body;
+/* 前言右侧的索引：本厅最值得看的几组，点了直接走到那面墙 */
+function idxGroups(v){let gs=groups(v,D);const top=(n)=>gs.slice().sort((a,b)=>b.items.length-a.items.length).slice(0,n);
+  if(v==='craft'){const def=new Set(Object.values(CRAFT_DEF));gs=gs.filter(g=>!def.has(g.k));const t=new Set(top(10));return gs.filter(g=>t.has(g))}
+  if(v==='era'){const t=new Set(top(10));return gs.filter(g=>t.has(g))}
+  if(v==='museum')return top(10).filter(g=>g.kind!==3);
+  return gs}
+function pickRep(g){return g.items.slice().sort((a,b)=>(b.n||b.imgs.length)-(a.n||a.imgs.length))[0]}
+function renderIdx(v){const gs=idxGroups(v);const el=$('#pIdx');el.classList.toggle('two',gs.length>7);
+  el.innerHTML=gs.map(g=>{const o=pickRep(g);return `<button data-g="${esc(g.k)}">${v==='color'?`<i class="sw" style="background:${g.sw}"></i>`:`<i class="th" style="background:${o.dom}"><img alt="" data-k="${esc(o.key)}"></i>`}<span><b>${esc(g.label)}</b><small>${g.items.length} 件</small></span></button>`}).join('')+
+  `<p class="pnote">点名字，直接走到那面墙</p>`;fillIdx()}
+function fillIdx(){document.querySelectorAll('#pIdx img[data-k]').forEach(im=>{if(im.getAttribute('src'))return;const o=D.find(x=>x.key===im.dataset.k);const s=o&&coverSrc(o);if(s){im.src=s}})}
+$('#pIdx').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const g=G.find(g=>g.k===b.dataset.g);if(g)walkTo(g.x-(innerWidth<760?20:60))});
+function renderPref(v){const p=PREF[v];if(!p)return;renderIdx(v);$('#pT').textContent=p.t;$('#pLead').textContent=p.lead;$('#pBody').textContent=p.body;
   $('#pStats').innerHTML=p.st().map(([a,b])=>`<span><b>${a}</b>${b}</span>`).join('')+(p.extra||'')}
 $('#pStats').addEventListener('click',e=>{if(e.target.closest('[data-atlas]'))openAtlas()});
 const HL=[['color','颜色',()=>`${new Set(D.map(o=>o.band)).size} 个色系，以器命色`],['category','类别',()=>`${new Set(D.map(o=>o.cat)).size} 类材质`],['craft','工艺',()=>`${new Set(D.map(o=>craftsOf(o)[0])).size} 种做法`],['era','年代',()=>'新石器时代至近现代'],['museum','博物馆',()=>`${new Set(D.map(o=>o.mus).filter(Boolean)).size} 处收藏地`],['map','行迹',()=>'在地图上看它们从哪里来']];
