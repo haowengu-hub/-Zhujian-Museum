@@ -531,7 +531,7 @@ function boot(){renderList();const first=D.find(o=>!P(o).done&&o.imgs.length>1)|
 try{picks=JSON.parse(localStorage.getItem('zj-picks')||'{}')}catch(e){}
 boot();
 (async()=>{
-  db=window.claude&&await window.claude.use('db');
+  db=window.claude?await Promise.race([window.claude.use('db'),new Promise(r=>setTimeout(()=>r(null),12000))]):null;
   if(!db){hcLoad();setSave('');const b=$('#banner');b.hidden=false;b.textContent='现在没法把选择存到云端（可能没有登录 claude.ai）。选择会暂存在这个浏览器里，登录后再打开即可同步保存。';return}
   store=db.collection('picks');setSave('已连接');hcLoad();
   let firstSnap=true;
