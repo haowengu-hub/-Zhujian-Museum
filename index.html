@@ -425,7 +425,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
 .hin{display:grid;grid-template-columns:auto minmax(0,27em) minmax(240px,300px);align-items:center;gap:clamp(28px,4vw,64px);max-width:1240px;width:100%}
 .hid{display:flex;align-items:center;gap:clamp(20px,3vw,40px)}
 .home .t{writing-mode:vertical-rl;font-family:var(--f-display);font-weight:900;font-size:clamp(64px,11vh,128px);letter-spacing:.04em;line-height:1.08;margin:0}
-.home .sig{height:min(38vh,320px);width:auto;opacity:.9}
+.home .sig{height:min(38vh,320px);width:auto;opacity:.9}.home .sh{display:none}
 .home .txt{display:flex;flex-direction:column;gap:18px}
 .home p{font-family:var(--f-display);font-weight:300;font-size:16px;line-height:1.9;color:var(--ink2);margin:0;text-wrap:pretty}
 .home .lead{font-size:21px;line-height:1.75;color:#eee5d4;font-weight:400;text-wrap:balance;margin-bottom:8px}.home .lead span{white-space:nowrap}
@@ -446,7 +446,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
 @media(max-width:760px){
   .home{display:block;padding:24px 20px 40px}.home[hidden]{display:none}
   .hin{grid-template-columns:1fr;gap:22px}
-  .hid{gap:14px;align-items:flex-end}.home .t{writing-mode:horizontal-tb;font-size:44px;line-height:1.1}.home .sig{height:112px}
+  .hid{display:inline-flex;flex-direction:column;align-items:flex-end;gap:10px;justify-self:start}.home .t{writing-mode:horizontal-tb;font-size:44px;line-height:1.1}.home .sv{display:none}.home .sh{display:block;height:34px}
   .home .lead{font-size:18px}.home p{font-size:15px}
   .intro.pref .t{writing-mode:horizontal-tb;font-size:40px;flex-basis:100%}
 }
@@ -503,7 +503,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
   </div>
   <section class="home" id="home" hidden>
     <div class="hin">
-      <div class="hid"><h1 class="t">竹间影像</h1><img class="sig" src="assets/sign.png" alt="竹间浑人"></div>
+      <div class="hid"><h1 class="t">竹间影像</h1><img class="sig sv" src="assets/sign.png" alt="竹间浑人"><img class="sig sh" src="assets/sign-h.png" alt="竹间浑人"></div>
       <div class="txt">
         <p class="lead">一个人，一台相机，<span>把走过的博物馆</span><span>拍成一座馆。</span></p><p>这里收着我在六十多家博物馆里拍下的四百余件文物，从新石器的玉、商周的青铜，到明清的瓷与金银，也有散落在海外馆里的中国器物。每一件都是我站在展柜前，等光、找角度，一张张拍下来的。</p><p>馆里分六个展厅，可以按颜色、类别、工艺、年代、博物馆来逛，也可以打开「行迹」，在地图上看它们从哪里来。</p><p class="en">An online museum of cultural relics photographed in person by Zhujian Hunren — more than four hundred objects from over sixty museums in China and abroad.</p>
         <div class="stats" id="stats"></div>
@@ -732,15 +732,16 @@ function renderPal(o){const op=opOf(o),pc=pcts(op.p);
 $('#lbPal').addEventListener('click',e=>{const b=e.target.closest('.prow');if(!b)return;copyHex(b.dataset.hex);b.classList.add('done');setTimeout(()=>b.classList.remove('done'),1200)});
 
 const atlas=$('#atlas');let atlasOn=false,atlasBuilt=false;
-function buildAtlas(){atlasBuilt=true;
-  const gs=BANDS.map(b=>({b,items:D.filter(o=>o.band===b[0]).sort((a,c)=>luma(mainOf(c)[0])-luma(mainOf(a)[0]))})).filter(g=>g.items.length);
-  $('#aSub').textContent=`以器命色。这里的 ${D.length} 种颜色，都以拍下它的那件文物命名；色名按材质取最接近的传统叫法，瓷器用釉色名，玉、铜、琉璃、绿松石各用各的。在电脑上把指针停在色块上，可以先看到原器；点开就进入这件文物。`;
+function atlasKeep(){const m=new Map();D.forEach(o=>{const n=mainOf(o)[2],p=m.get(n);if(!p||(o.imgs.length>p.imgs.length))m.set(n,o)});return new Set(m.values())}
+function buildAtlas(){atlasBuilt=true;const keep=atlasKeep();
+  const gs=BANDS.map(b=>({b,items:D.filter(o=>o.band===b[0]&&keep.has(o)).sort((a,c)=>luma(mainOf(c)[0])-luma(mainOf(a)[0]))})).filter(g=>g.items.length);
+  $('#aSub').textContent=`以器命色。这里的 ${keep.size} 种颜色，都以拍下它的那件文物命名；同名的颜色只留一件；色名按材质取最接近的传统叫法，瓷器用釉色名，玉、铜、琉璃、绿松石各用各的。在电脑上把指针停在色块上，可以先看到原器；点开就进入这件文物。`;
   $('#ajump').innerHTML=gs.map(g=>`<button data-b="${g.b[0]}" style="color:${bandInk(g.b)}" aria-label="跳到${g.b[0]}">${g.b[0]}</button>`).join('');
-  $('#abody').innerHTML=gs.map(g=>`<section class="aband" id="ab-${g.b[0]}"><div class="bh"><b style="color:${bandInk(g.b)}">${g.b[0]}</b><span><i>${g.items.length}</i> 色 · ${g.b[1]}</span></div><div class="agrid">${g.items.map(o=>{const c=mainOf(o);return `<button class="chip" data-k="${esc(o.key)}"><span class="cc" style="background:${c[0]}"><img alt=""></span><span class="cnm">${esc(c[2])}<em>${c[0].toUpperCase()}</em></span><span class="cn">${esc(o.name)}</span></button>`}).join('')}</div></section>`).join('')}
+  $('#abody').innerHTML=gs.map(g=>`<section class="aband" id="ab-${g.b[0]}"><div class="bh"><b style="color:${bandInk(g.b)}">${g.b[0]}</b><span><i>${g.items.length}</i> 色 · ${g.b[1]}</span></div><div class="agrid">${g.items.map(o=>{const c=mainOf(o);return `<button class="chip" data-k="${esc(o.key)}" data-n="${esc(c[2])}"><span class="cc" style="background:${c[0]}"><img alt=""></span><span class="cnm">${esc(c[2])}<em>${c[0].toUpperCase()}</em></span><span class="cn">${esc(o.name)}</span></button>`}).join('')}</div></section>`).join('')}
 function peek(b){const im=b&&b.querySelector('img');if(!im||im.getAttribute('src'))return;const o=D.find(x=>x.key===b.dataset.k);const s=o&&coverSrc(o);if(s)im.src=s}
 function openAtlas(key){if(!atlasBuilt)buildAtlas();stopTour();atlas.classList.add('open');atlasOn=true;
   atlas.querySelectorAll('.chip.hl').forEach(n=>n.classList.remove('hl'));
-  if(key){const b=atlas.querySelector(`.chip[data-k="${CSS.escape(key)}"]`);if(b){b.classList.add('hl');peek(b);setTimeout(()=>b.scrollIntoView({block:'center'}),30)}}else atlas.scrollTop=0;
+  if(key){let b=atlas.querySelector(`.chip[data-k="${CSS.escape(key)}"]`);if(!b){const o=D.find(x=>x.key===key);if(o)b=atlas.querySelector(`.chip[data-n="${CSS.escape(mainOf(o)[2])}"]`)}if(b){b.classList.add('hl');peek(b);setTimeout(()=>b.scrollIntoView({block:'center'}),30)}}else atlas.scrollTop=0;
   setTimeout(()=>$('#aClose').focus({preventScroll:true}),60)}
 function closeAtlas(){atlas.classList.remove('open');atlasOn=false}
 $('#atlasBtn').onclick=()=>openAtlas();$('#aClose').onclick=closeAtlas;
@@ -914,7 +915,7 @@ try{const lk=new URLSearchParams(location.search).get('look')||(location.hash.ma
 /* 总领页与各展厅前言 */
 const PREF={
   color:{t:'颜色',lead:'霁红、甜白、松石绿，很多颜色在器物上早就有了名字。',body:'这一厅按颜色挂，赤、金、缃、赭、青、蓝、紫、素、苍、玄，一共十面墙。器名里写着颜色的，就照原名叫，郎窑红是郎窑红，鎏金是鎏金；没写的，我从照片上取色，再配一个最接近的旧称。整套颜色收在竹间色谱里。',
-    st:()=>[[new Set(D.map(o=>o.band)).size,'个色系'],[D.length,'种颜色']],extra:'<button data-atlas="1">打开竹间色谱</button>'},
+    st:()=>[[new Set(D.map(o=>o.band)).size,'个色系'],[new Set(D.map(o=>mainOf(o)[2])).size,'种颜色']],extra:'<button data-atlas="1">打开竹间色谱</button>'},
   category:{t:'类别',lead:'每一类，从最早的一件排起。',body:'青铜、玉器、绿松石、玛瑙、水晶、陶瓷、玻璃、金银、漆木、牙角雕刻、珐琅、织绣、书画、石刻造像、古建筑、古建壁画，再加一面杂项，各占一面墙。同一类里按年代排，鼎、璧、瓶、盒，一路看下去，形制和纹样怎么变，都摆在眼前。',
     st:()=>[[new Set(D.map(o=>o.cat)).size,'类'],[D.length,'件']]},
   craft:{t:'工艺',lead:'天有时，地有气，材有美，工有巧。',body:'这句话出自《考工记》，说的是好器物要四样齐备。这一厅只看最后一样：掐丝、累丝、鎏金、错金银，青花、斗彩、粉彩，剔红、螺钿、缂丝。每面墙上写着这门工艺的做法。器名里看不出工艺的，归到范铸、琢玉、烧造这几类基本做法里。',
@@ -927,13 +928,13 @@ const PREF={
 const HALLCOV={"category": {"漆木": "img/hc/category_5d019e14.webp", "珐琅": "img/hc/category_a257e886.webp", "织绣": "img/hc/category_edf790ab.webp"}, "craft": {"书画": "img/hc/craft_4190eaf5.webp", "五彩": "img/hc/craft_4e104987.webp", "刺绣": "img/hc/craft_0b4fb4f3.webp", "磨刻": "img/hc/craft_6c47c6a9.webp", "剔红·雕漆": "img/hc/craft_17c44073.webp", "单色釉": "img/hc/craft_259a809d.webp", "彩绘": "img/hc/craft_079ee7f1.webp", "掐丝珐琅": "img/hc/craft_5a1f964a.webp", "描金": "img/hc/craft_f9f30168.webp", "斗彩": "img/hc/craft_307babfc.webp", "木雕": "img/hc/craft_1f7e89c6.webp", "浮雕·圆雕": "img/hc/craft_ff6ccb97.webp", "点翠": "img/hc/craft_b8a6fcb7.webp", "烧造": "img/hc/craft_428fb66a.webp", "玻璃": "img/hc/craft_b0890cb7.webp", "琉璃构件": "img/hc/craft_2242a59b.webp", "琢玉": "img/hc/craft_60408170.webp", "石雕": "img/hc/craft_e2ba6330.webp", "粉彩": "img/hc/craft_2bb05594.webp", "素三彩·三彩": "img/hc/craft_ba467fb2.webp", "累丝": "img/hc/craft_68716be0.webp", "织造": "img/hc/craft_f1abaa45.webp", "织锦": "img/hc/craft_92cb9627.webp", "范铸": "img/hc/craft_eea5ee67.webp", "营造": "img/hc/craft_594ce590.webp", "透雕·镂空": "img/hc/craft_b918f47e.webp", "釉里红": "img/hc/craft_ed1572fa.webp", "鎏金": "img/hc/craft_db3be08d.webp", "铸金": "img/hc/craft_d70b989b.webp", "铸铜": "img/hc/craft_6837ef75.webp", "错金银": "img/hc/craft_f8ce087f.webp", "锤揲": "img/hc/craft_233693d1.webp", "镶嵌": "img/hc/craft_5f7869bc.webp", "青花": "img/hc/craft_403b6bd0.webp", "髹漆": "img/hc/craft_24cf7a2d.webp"}}/*HALLCOV*/;
 function idxGroups(v){let gs=groups(v,D);const top=(n)=>gs.slice().sort((a,b)=>b.items.length-a.items.length).slice(0,n);
   if(v==='craft'){const def=new Set(Object.values(CRAFT_DEF));gs=gs.filter(g=>!def.has(g.k));const t=new Set(top(10));return gs.filter(g=>t.has(g))}
-  if(v==='era'){const t=new Set(top(10));return gs.filter(g=>t.has(g))}
+  if(v==='era'||v==='category'){const t=new Set(top(10));return gs.filter(g=>t.has(g))}
   if(v==='museum')return top(10).filter(g=>g.kind!==3);
   return gs}
 function pickRep(g){return g.items.slice().sort((a,b)=>(b.n||b.imgs.length)-(a.n||a.imgs.length))[0]}
 function renderIdx(v){const gs=idxGroups(v);const el=$('#pIdx');el.classList.toggle('two',gs.length>7);
   el.innerHTML=gs.map(g=>{const o=pickRep(g);return `<button data-g="${esc(g.k)}">${(HALLCOV[v]||{})[g.k]?`<i class="th"><img alt="" src="${HALLCOV[v][g.k]}"></i>`:v==='color'?`<i class="sw" style="background:${g.sw}"></i>`:`<i class="th" style="background:${o.dom}"><img alt="" data-k="${esc(o.key)}"></i>`}<span><b>${esc(g.label)}</b><small>${g.items.length} 件</small></span></button>`}).join('')+
-  (()=>{const all=groups(v,D).length,more=all-gs.length;return more>0?`<button class="pmore" data-more="1">查看全部 ${all} ${({craft:'种工艺',era:'个时代',museum:'处收藏地'})[v]||'组'}</button>`:''})()+`<p class="pnote">点名字，直接走到那面墙</p>`;fillIdx()}
+  (()=>{const all=groups(v,D).length,more=all-gs.length;return more>0?`<button class="pmore" data-more="1">查看全部 ${all} ${({craft:'种工艺',era:'个时代',museum:'处收藏地',category:'类'})[v]||'组'}</button>`:''})()+`<p class="pnote">点名字，直接走到那面墙</p>`;fillIdx()}
 function fillIdx(){document.querySelectorAll('#pIdx img[data-k]').forEach(im=>{if(im.getAttribute('src'))return;const o=D.find(x=>x.key===im.dataset.k);const s=o&&coverSrc(o);if(s){im.src=s}})}
 $('#pIdx').addEventListener('click',e=>{if(e.target.closest('[data-more]')){const t=$('#toc');t.hidden=false;$('#tocBtn').textContent='收起 ▾';return}const b=e.target.closest('[data-g]');if(!b)return;const g=G.find(g=>g.k===b.dataset.g);if(g)walkTo(g.x-(innerWidth<760?20:60))});
 function renderPref(v){const p=PREF[v];if(!p)return;renderIdx(v);$('#pT').textContent=p.t;$('#pLead').textContent=p.lead;$('#pBody').textContent=p.body;
