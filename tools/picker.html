@@ -122,7 +122,8 @@ main{overflow-y:auto;min-height:0;padding-block:22px 40px;padding-left:max(28px,
 #hcBtn.on{border-color:var(--gilt);color:var(--gilt)}
 .hc{grid-column:2;overflow-y:auto;min-height:0;padding:22px max(28px,env(safe-area-inset-right,0px)) 40px 28px}
 .hc h2{margin:0 0 4px;font-family:var(--f-display);font-weight:600;font-size:26px;letter-spacing:.04em}
-.hctabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 18px}
+.hctabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.hcf{display:flex;gap:4px;margin:0 0 18px}.hcf button{padding:4px 12px;font-size:13px;color:var(--mute);border-bottom:1px solid transparent}.hcf button i{font-style:normal;font-variant-numeric:tabular-nums;opacity:.7;margin-left:2px}.hcf button[aria-pressed="true"]{color:var(--fg);border-bottom-color:var(--gilt)}
 .hctabs button{padding:6px 16px;border:1px solid var(--line);font-size:14px;color:var(--mute)}
 .hctabs button[aria-pressed="true"]{color:var(--fg);border-color:var(--gilt)}
 .hcgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px 14px;max-width:1100px}
@@ -471,11 +472,14 @@ function hcGroups(v){const m=new Map();live().forEach(o=>{const k=hcKey(v,o);if(
   let ks=[...m.keys()];if(v==='craft')ks.sort((a,b)=>CRAFT_ORDER.indexOf(a)-CRAFT_ORDER.indexOf(b));else if(v==='color'){const bo=BANDS.map(b=>b[0]);ks.sort((a,b)=>bo.indexOf(a)-bo.indexOf(b))}
   else if(v==='era')ks.sort((a,b)=>ERAS.indexOf(a)-ERAS.indexOf(b));else ks.sort((a,b)=>m.get(b).length-m.get(a).length);
   return ks.map(k=>({k,items:m.get(k)}))}
-function hcRender(){const el=$('#hc');const gs=hcGroups(hcView),saved=(HC[hcView]||{}).g||{};
-  if(hcG&&!gs.find(g=>g.k===hcG))hcG=null;const g=gs.find(g=>g.k===hcG);
+let hcF='todo';
+function hcRender(){const el=$('#hc');const gsAll=hcGroups(hcView),saved=(HC[hcView]||{}).g||{};const nDone=gsAll.filter(x=>saved[x.k]).length;
+  const gs=gsAll.filter(x=>x.k===hcG||hcF==='all'||(hcF==='done')===!!saved[x.k]);
+  if(hcG&&!gsAll.find(g=>g.k===hcG))hcG=null;const g=gs.find(g=>g.k===hcG);
   el.innerHTML=`<h2>展厅封面</h2><p class="hint" style="margin:0">网站每个展厅开头有一列入口，这里给每一组选一张图、裁成正方形。没选的，网站上用这一组里照片最多的那件。</p>
   <div class="hctabs">${HCV.map(([v,t])=>`<button data-hv="${v}" aria-pressed="${v===hcView}">${t}</button>`).join('')}</div>
-  <div class="hcgrid">${gs.map(x=>{const sv=saved[x.k];return `<button class="hcg${sv?' set':''}${x.k===hcG?' cur':''}" data-hg="${esc(x.k)}"><span class="sq">${sv?`<img src="${sv.t}" alt="">`:'未选'}</span><b>${esc(hcLabel(hcView,x.k))}</b><small>${x.items.length} 件${sv?' · 已选':''}</small></button>`}).join('')}</div>
+  <div class="hcf">${[['todo','未选',gsAll.length-nDone],['done','已选',nDone],['all','全部',gsAll.length]].map(([f,t,n])=>`<button data-hf="${f}" aria-pressed="${f===hcF}">${t} <i>${n}</i></button>`).join('')}</div>
+  ${gs.length?'':`<p class="hint">${hcF==='todo'?'这个展厅的封面都选好了。':'这个展厅还没有选过封面。'}</p>`}<div class="hcgrid">${gs.map(x=>{const sv=saved[x.k];return `<button class="hcg${sv?' set':''}${x.k===hcG?' cur':''}" data-hg="${esc(x.k)}"><span class="sq">${sv?`<img src="${sv.t}" alt="">`:'未选'}</span><b>${esc(hcLabel(hcView,x.k))}</b><small>${x.items.length} 件${sv?' · 已选':''}</small></button>`}).join('')}</div>
   ${g?hcEditor(g):''}`;
   if(g&&hcO&&hcImg)hcBindCrop()}
 function hcEditor(g){const opts=CRAFT_ORDER;
@@ -510,6 +514,7 @@ const hcId=(v,k)=>v+'_'+[...new TextEncoder().encode(k)].map(b=>b.toString(16).p
 async function hcWrite(v,k,rec){try{if(db){const ref=db.collection('hcov').doc(hcId(v,k));if(rec)await ref.set({v,g:k,...rec});else await ref.delete()}else localStorage.setItem('zj-hc',JSON.stringify(HC));return true}catch(e){setSave('封面没保存上，请再点一次',true);const b=$('#csave');if(b){b.disabled=false;hcBtnState()}return false}}
 $('#hcBtn').onclick=()=>{hcMode=!hcMode;$('#hcBtn').classList.toggle('on',hcMode);$('#hcBtn').textContent=hcMode?'回到逐件挑选':'展厅封面';$('#main').hidden=hcMode;$('#hc').hidden=!hcMode;if(hcMode)hcRender()};
 $('#hc').addEventListener('click',async e=>{const t=e.target;
+  const hfb=t.closest('[data-hf]');if(hfb){hcF=hfb.dataset.hf;hcRender();return}
   const hv=t.closest('[data-hv]');if(hv){hcView=hv.dataset.hv;hcG=null;hcO=null;hcImg=null;hcRender();return}
   const hg=t.closest('[data-hg]');if(hg){hcG=hg.dataset.hg;hcO=null;hcImg=null;const sv=((HC[hcView]||{}).g||{})[hcG];if(sv){hcO=D.find(o=>o.k===sv.k)||null;if(hcO){hcImg=sv.img;hcCrop={x:sv.x,y:sv.y,s:sv.s};await loadT(hcO)}}hcRender();const ed=document.querySelector('#hc .hced');if(ed)ed.scrollIntoView({behavior:'smooth',block:'start'});return}
   if(t.closest('select'))return;
