@@ -1,0 +1,379 @@
+[
+  {
+    "name": "红山文化",
+    "kind": "考古文化",
+    "start": -4500,
+    "end": -3000,
+    "period": "约公元前4500至前3000年",
+    "region": "西辽河流域，辽西、内蒙古东南部及冀北",
+    "areas": [
+      [
+        753,
+        265,
+        65,
+        35
+      ]
+    ],
+    "source": "https://www.mct.gov.cn/wlbphone/wlbydd/xxfb/qglb/nmg/202407/t20240710_954008.html",
+    "note": "",
+    "aliases": [],
+    "intro": ""
+  },
+  {
+    "name": "大汶口文化",
+    "kind": "考古文化",
+    "start": -4300,
+    "end": -2500,
+    "period": "约公元前4300至前2500年",
+    "region": "海岱地区，以今山东为中心",
+    "areas": [
+      [
+        743,
+        393,
+        44,
+        40
+      ]
+    ],
+    "source": "https://shandong-chorography.org/database/c92/section/2/article/141/",
+    "note": "",
+    "aliases": [],
+    "intro": ""
+  },
+  {
+    "name": "凌家滩文化",
+    "kind": "考古文化",
+    "start": -3800,
+    "end": -3300,
+    "period": "约公元前3800至前3300年",
+    "region": "安徽含山凌家滩，长江下游",
+    "areas": [
+      [
+        760,
+        479,
+        20,
+        17
+      ]
+    ],
+    "source": "https://www.mct.gov.cn/wlbphone/wlbydd/xxfb/qglb/ah/202305/t20230509_943627.html",
+    "note": "以凌家滩遗址为中心作位置示意，不把遗址面积当作文化分布边界。",
+    "aliases": [],
+    "intro": "凌家滩遗址位于安徽含山，属于长江下游新石器时代晚期遗存。"
+  },
+  {
+    "name": "良渚文化",
+    "kind": "考古文化",
+    "start": -3300,
+    "end": -2300,
+    "period": "约公元前3300至前2300年",
+    "region": "长江下游环太湖地区",
+    "areas": [
+      [
+        800,
+        484,
+        37,
+        28
+      ]
+    ],
+    "source": "https://www.chnmuseum.cn/yj/xscg/xslw/201812/t20181224_36104.shtml",
+    "note": "",
+    "aliases": [],
+    "intro": ""
+  },
+  {
+    "name": "陶寺文化",
+    "kind": "考古文化",
+    "start": -2300,
+    "end": -1900,
+    "period": "约公元前2300至前1900年",
+    "region": "晋南，山西襄汾陶寺",
+    "areas": [
+      [
+        646,
+        393,
+        24,
+        28
+      ]
+    ],
+    "source": "https://www.ndrc.gov.cn/xwdt/ztzl/dyhgjwhgy/202209/t20220919_1335765_ext.html",
+    "note": "年代取陶寺遗址主体年代，范围以晋南核心区示意。",
+    "aliases": [],
+    "intro": ""
+  },
+  {
+    "name": "后石家河文化",
+    "kind": "考古文化",
+    "start": -2200,
+    "end": -1800,
+    "period": "约公元前2200至前1800年",
+    "region": "江汉平原，以湖北天门石家河为代表",
+    "areas": [
+      [
+        678,
+        503,
+        43,
+        28
+      ]
+    ],
+    "source": "https://wlt.hubei.gov.cn/bmdt/mtjj/202211/t20221103_4385995.shtml",
+    "note": "又称肖家屋脊文化。距今约4200至3800年，换算公元前年代为约数。",
+    "aliases": [
+      "后石家河",
+      "肖家屋脊",
+      "肖家屋脊文化"
+    ],
+    "intro": "又称肖家屋脊文化，距今约4200至3800年。"
+  },
+  {
+    "name": "二里头文化",
+    "kind": "考古文化",
+    "start": -1800,
+    "end": -1500,
+    "period": "约公元前1800至前1500年（距今约3800至3500年）",
+    "region": "伊洛河流域，以河南偃师二里头遗址为代表",
+    "areas": [
+      [
+        666,
+        421,
+        30,
+        22
+      ]
+    ],
+    "source": "https://www.cssn.cn/lsx/lsx_kgx/202210/t20221024_5552684.shtml",
+    "note": "以二里头遗址为中心作位置示意。",
+    "aliases": [],
+    "intro": "以二里头遗址为代表，出土中国最早的青铜礼器群和镶嵌绿松石铜牌饰、绿松石龙形器等。"
+  },
+  {
+    "name": "三星堆文化",
+    "kind": "考古文化",
+    "start": -1600,
+    "end": -1000,
+    "period": "约公元前1600至前1000年前后；祭祀坑埋藏于约公元前1200至前1010年",
+    "region": "成都平原，以四川广汉三星堆遗址为代表",
+    "areas": [
+      [
+        523,
+        502,
+        26,
+        20
+      ]
+    ],
+    "source": "https://www.cssn.cn/skgz/bwyc/202510/t20251009_5918153.shtml",
+    "note": "起始年代学界仍有讨论；祭祀坑年代据2025年公布的碳十四测年。",
+    "aliases": [],
+    "intro": "古蜀文明的代表，青铜人像、面具与神树等器物造型独特。"
+  },
+  {
+    "name": "滇文化",
+    "kind": "考古文化",
+    "start": -475,
+    "end": 9,
+    "period": "战国至西汉，示意时段",
+    "region": "云南滇池地区",
+    "areas": [
+      [
+        499,
+        626,
+        35,
+        26
+      ]
+    ],
+    "source": "https://kmmuseum.com/wap/zl_info.asp?id=7",
+    "note": "采用战国至西汉作为本图展示窗口，不作为所有滇文化遗存的严格起止年代。",
+    "aliases": [],
+    "intro": ""
+  },
+  {
+    "name": "越窑",
+    "kind": "窑口",
+    "start": 100,
+    "end": 1127,
+    "period": "东汉中期至北宋，主要活动时段",
+    "region": "浙江上虞、余姚一带",
+    "areas": [
+      [
+        817,
+        501,
+        25,
+        20
+      ]
+    ],
+    "source": "https://www.dpm.org.cn/journal/379123.html?_list=1",
+    "note": "唐五代和北宋前期兴盛，北宋后衰落；图中为约略活动期。",
+    "aliases": [],
+    "intro": "六朝、唐五代及北宋前期，是越窑青瓷的重要发展阶段。"
+  },
+  {
+    "name": "龙泉窑",
+    "kind": "窑口",
+    "start": 907,
+    "end": 1464,
+    "period": "五代至明早期，代表时段",
+    "region": "浙江龙泉及浙南",
+    "areas": [
+      [
+        781,
+        553,
+        22,
+        25
+      ]
+    ],
+    "source": "https://www.dpm.org.cn/research_institute/activity/detail/256522.html",
+    "note": "南宋至明早期为重要繁荣阶段，未把代表时段当作整个窑业的存续年限。",
+    "aliases": [],
+    "intro": "南宋至明早期是龙泉青瓷的重要繁荣时期。"
+  },
+  {
+    "name": "汝窑",
+    "kind": "窑口",
+    "start": 1086,
+    "end": 1125,
+    "period": "北宋晚期，约1086至1125年",
+    "region": "河南宝丰清凉寺",
+    "areas": [
+      [
+        676,
+        441,
+        22,
+        17
+      ]
+    ],
+    "source": "https://www.chnmuseum.cn/portals/0/web/zt/cizhiyun/project/detail/36.html",
+    "note": "此处采用北宋御用汝瓷的代表时段，不涵盖清凉寺全部窑业遗存。",
+    "aliases": [],
+    "intro": "北宋御用汝瓷以河南宝丰清凉寺窑址为代表。"
+  },
+  {
+    "name": "景德镇窑",
+    "kind": "窑口",
+    "start": 907,
+    "end": 1911,
+    "period": "五代至清，历史展示时段",
+    "region": "江西景德镇",
+    "areas": [
+      [
+        758,
+        526,
+        20,
+        19
+      ]
+    ],
+    "source": "https://www.dpm.org.cn/Uploads/pdf/4881/T00020_00.pdf",
+    "note": "图谱目前展示至清代，不表示景德镇制瓷在清末终止。",
+    "aliases": [],
+    "intro": "以江西景德镇为中心的制瓷窑口，制瓷传统延续至今。"
+  },
+  {
+    "name": "德化窑",
+    "kind": "窑口",
+    "start": 960,
+    "end": 1911,
+    "period": "宋元明清，历史展示时段",
+    "region": "福建德化",
+    "areas": [
+      [
+        779,
+        593,
+        19,
+        19
+      ]
+    ],
+    "source": "https://dehua.gov.cn/zwgk/zdxxgk/ggwhty/whycbh/202410/t20241030_3099350.htm",
+    "note": "图谱展示历史窑址覆盖的主要时期，不表示制瓷在清末终止。",
+    "aliases": [],
+    "intro": "福建德化的制瓷传统历经宋、元、明、清，延续至今。"
+  },
+  {
+    "name": "漳州窑",
+    "kind": "窑口",
+    "start": 1368,
+    "end": 1911,
+    "period": "明清",
+    "region": "福建漳州地区",
+    "areas": [
+      [
+        771,
+        619,
+        23,
+        21
+      ]
+    ],
+    "source": "https://wlt.fujian.gov.cn/zwgk/ztzl/bmwu/202401/t20240117_6382197.htm",
+    "note": "窑址涉及平和、漳浦、南靖等地；这里表现漳州地区而非精确窑址边界。",
+    "aliases": [],
+    "intro": "窑址分布于福建漳州的平和、漳浦、南靖等地。"
+  },
+  {
+    "name": "宜兴窑",
+    "kind": "窑口",
+    "start": 1368,
+    "end": 1911,
+    "period": "明清，紫砂代表时段",
+    "region": "江苏宜兴",
+    "areas": [
+      [
+        788,
+        480,
+        18,
+        16
+      ]
+    ],
+    "source": "https://www.shanghaimuseum.net/mu/frontend/pg/m/article/id/RI00004033",
+    "note": "展示明清紫砂的代表阶段，不等于宜兴全部陶业的起止年代。",
+    "aliases": [],
+    "intro": "以江苏宜兴为中心，明清紫砂是其代表性陶瓷品种。"
+  },
+  {
+    "name": "宋四家",
+    "kind": "艺术群体",
+    "start": 1000,
+    "end": 1127,
+    "period": "北宋，11世纪至12世纪初",
+    "region": "北宋书坛，活动跨多地",
+    "areas": [],
+    "source": "https://www.dpm.org.cn/journal_detail/113165.html",
+    "note": "指苏轼、黄庭坚、米芾、蔡襄。非单一区域的考古文化，本图不据籍贯强行划定范围。",
+    "aliases": [],
+    "intro": "苏轼、黄庭坚、米芾、蔡襄并称“宋四家”。"
+  },
+  {
+    "name": "吴门四家",
+    "kind": "艺术群体",
+    "start": 1400,
+    "end": 1600,
+    "period": "明代中期，约15至16世纪",
+    "region": "苏州及周边江南地区",
+    "areas": [
+      [
+        805,
+        477,
+        24,
+        20
+      ]
+    ],
+    "source": "https://dfzb.suzhou.gov.cn/dfzb/fzxh/200902/455d2887a8ae49929ddae5cb609117e3.shtml",
+    "note": "沈周、文徵明、唐寅、仇英，以活动中心示意。",
+    "aliases": [],
+    "intro": "沈周、文徵明、唐寅、仇英并称“吴门四家”，以苏州为重要艺术活动中心。"
+  },
+  {
+    "name": "扬州八怪",
+    "kind": "艺术群体",
+    "start": 1700,
+    "end": 1800,
+    "period": "清代，18世纪",
+    "region": "扬州",
+    "areas": [
+      [
+        781,
+        456,
+        20,
+        17
+      ]
+    ],
+    "source": "https://www.dpm.org.cn/lemmas/242617.html",
+    "note": "以扬州艺术活动中心示意，不表示成员都出生于扬州。",
+    "aliases": [],
+    "intro": "活跃于清代扬州的画家群体，以鲜明的个人风格影响后世。"
+  }
+]

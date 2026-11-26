@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>星河 · 竹间影像</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--void:#050404;--paper:#ece3d2;--dim:#9a8e7c;--faint:#6d6354;--gilt:#c9a66b;--seal:#b02b20;
+ --serif:"Noto Serif SC","Songti SC",serif;--latin:"Cormorant Garamond","Noto Serif SC",serif;--s:1;color-scheme:dark}
+@media(min-width:1500px){:root{--s:1.12}}@media(min-width:1800px){:root{--s:1.28}}@media(min-width:2200px){:root{--s:1.5}}@media(min-width:2800px){:root{--s:1.8}}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--void);color:var(--paper);overflow:hidden}
+body{font:300 calc(14px*var(--s))/1.7 var(--serif);-webkit-font-smoothing:antialiased;user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible{outline:1px solid var(--gilt);outline-offset:4px}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab}#c.drag{cursor:grabbing}#c.hot{cursor:pointer}
+.veil{position:fixed;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(5,4,4,.7) 100%)}
+
+.head{position:fixed;left:calc(40px*var(--s));top:calc(28px*var(--s));pointer-events:none;max-width:min(calc(420px*var(--s)),60vw)}
+.head h1{margin:0;font-weight:400;font-size:calc(40px*var(--s));letter-spacing:.5em;line-height:1.1;text-shadow:0 0 30px rgba(255,220,170,.25)}
+.head p{margin:calc(12px*var(--s)) 0 0;color:var(--dim);font-size:calc(13px*var(--s));line-height:1.9;letter-spacing:.06em}
+.head p b{font:400 1.25em var(--latin);color:var(--gilt);font-variant-numeric:lining-nums}
+
+.modes{position:fixed;right:calc(40px*var(--s));top:calc(34px*var(--s));display:flex;gap:calc(26px*var(--s))}
+.modes button{font-size:calc(14px*var(--s));color:var(--dim);letter-spacing:.2em;padding:6px 0;position:relative}
+.modes button:hover{color:var(--paper)}
+.modes button[aria-pressed=true]{color:var(--paper)}
+.modes button[aria-pressed=true]:after{content:'';position:absolute;left:0;right:.2em;bottom:0;height:1px;background:var(--gilt);box-shadow:0 0 8px var(--gilt)}
+
+.links{position:fixed;left:calc(40px*var(--s));right:calc(40px*var(--s));bottom:calc(26px*var(--s));display:flex;align-items:center;gap:calc(22px*var(--s))}
+.links>span{color:var(--faint);font-size:calc(12px*var(--s));letter-spacing:.3em;white-space:nowrap}
+.chips{display:flex;gap:calc(8px*var(--s));overflow-x:auto;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,#000 90%,transparent);padding:4px 40px 4px 2px}
+.chips::-webkit-scrollbar{display:none}
+.chips button{flex-shrink:0;font-size:calc(13px*var(--s));color:var(--dim);padding:calc(5px*var(--s)) calc(13px*var(--s));border:1px solid rgba(236,227,210,.12);border-radius:99px;background:rgba(10,9,8,.5);backdrop-filter:blur(6px);transition:color .2s,border-color .2s,box-shadow .2s}
+.chips button small{font:italic calc(13px*var(--s)) var(--latin);color:var(--faint);margin-left:6px}
+.chips button:hover{color:var(--paper);border-color:rgba(201,166,107,.45)}
+.chips button[aria-pressed=true]{color:#fff6e6;border-color:var(--gilt);box-shadow:0 0 14px rgba(201,166,107,.35),inset 0 0 10px rgba(201,166,107,.15)}
+.chips button[aria-pressed=true] small{color:var(--gilt)}
+.chips i{flex-shrink:0;width:1px;height:16px;background:rgba(236,227,210,.12);align-self:center}
+
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.cl{position:absolute;left:0;top:0;white-space:nowrap;transform-origin:0 0;transition:opacity .5s;text-align:center}
+.cl b{display:block;font-weight:400;font-size:calc(15px*var(--s));letter-spacing:.32em;color:rgba(236,227,210,.82);text-shadow:0 0 12px #050404,0 0 4px #050404}
+.cl small{display:block;font-size:calc(11px*var(--s));letter-spacing:.2em;color:rgba(201,166,107,.75);margin-top:2px}
+.cl.era b{font-size:calc(13px*var(--s));color:rgba(201,166,107,.9);letter-spacing:.4em}
+.near{position:absolute;left:0;top:0;width:calc(64px*var(--s));height:calc(64px*var(--s));border-radius:50%;overflow:hidden;opacity:0;transition:opacity .4s;box-shadow:0 0 18px rgba(255,224,180,.35)}
+.near img{width:100%;height:100%;object-fit:cover;display:block}
+
+#tip{position:fixed;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .15s;display:flex;gap:12px;align-items:center;padding:8px 14px 8px 8px;background:rgba(12,10,9,.82);border:1px solid rgba(201,166,107,.28);backdrop-filter:blur(8px);max-width:360px}
+#tip img{width:calc(66px*var(--s));height:calc(44px*var(--s));object-fit:cover;flex-shrink:0;background:#111}
+#tip b{display:block;font-weight:400;font-size:calc(14px*var(--s));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
+#tip span{display:block;font-size:calc(11.5px*var(--s));color:var(--dim);letter-spacing:.06em}
+
+#card{position:fixed;right:calc(40px*var(--s));top:50%;width:min(calc(330px*var(--s)),calc(100vw - 32px));transform:translate(30px,-50%);opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;background:linear-gradient(180deg,rgba(16,13,11,.9),rgba(10,9,8,.86));border:1px solid rgba(201,166,107,.25);backdrop-filter:blur(10px);box-shadow:0 30px 80px #000}
+#card.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+#card .ph{display:block;width:100%;aspect-ratio:3/2;background:#0a0908;overflow:hidden;cursor:zoom-in}
+#card .ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s}
+#card .ph:hover img{transform:scale(1.04)}
+#card .bd{padding:calc(18px*var(--s)) calc(20px*var(--s)) calc(20px*var(--s))}
+#card h2{margin:0;font-weight:500;font-size:calc(21px*var(--s));line-height:1.4;letter-spacing:.06em}
+#card .meta{color:var(--dim);font-size:calc(12.5px*var(--s));margin-top:6px}
+#card .tg{display:flex;flex-wrap:wrap;gap:6px;margin-top:calc(14px*var(--s))}
+#card .tg button{font-size:calc(12px*var(--s));color:var(--dim);border:1px solid rgba(236,227,210,.12);padding:2px 10px;border-radius:99px}
+#card .tg button:hover{color:var(--paper);border-color:var(--gilt)}
+#card .tg em{font-style:normal;color:var(--faint);font-size:calc(11px*var(--s));align-self:center;margin-right:2px}
+#card .act{display:flex;justify-content:space-between;align-items:center;margin-top:calc(18px*var(--s));border-top:1px solid rgba(201,166,107,.15);padding-top:calc(12px*var(--s))}
+#card .act button{font-size:calc(13px*var(--s));color:var(--gilt);letter-spacing:.12em;min-height:36px}
+#card .act button:hover{color:#f3d9a8}
+#card .act .x{color:var(--faint)}
+.sib{font-size:calc(12px*var(--s));color:var(--faint);margin-top:calc(14px*var(--s));letter-spacing:.06em}
+.sib div{display:flex;gap:6px;margin-top:8px}
+.sib button{width:calc(48px*var(--s));aspect-ratio:1;overflow:hidden;opacity:.7;transition:opacity .2s}
+.sib button:hover{opacity:1}
+.sib img{width:100%;height:100%;object-fit:cover;display:block}
+
+.hint{position:fixed;left:50%;top:calc(34px*var(--s));transform:translateX(-50%);color:var(--faint);font-size:calc(12px*var(--s));letter-spacing:.25em;pointer-events:none;transition:opacity 1s}
+.load{position:fixed;inset:0;display:grid;place-items:center;color:var(--dim);letter-spacing:.4em;font-size:13px;transition:opacity 1.2s;pointer-events:none}
+.nogl{position:fixed;inset:0;display:none;place-items:center;text-align:center;color:var(--dim);padding:24px}
+
+@media(max-width:760px){
+ .head{left:18px;top:16px}.head h1{font-size:28px}.head p{font-size:12px;max-width:62vw}
+ .modes{right:18px;top:20px;gap:16px}.modes button{font-size:13px;letter-spacing:.1em}
+ .links{left:14px;right:0;bottom:max(14px,env(safe-area-inset-bottom));gap:10px}.links>span{display:none}
+ #card{left:12px;right:12px;width:auto;top:auto;bottom:70px;transform:translateY(30px)}#card.on{transform:none}
+ #card .ph{aspect-ratio:2/1}.sib{display:none}
+ .hint{display:none}#tip{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+<canvas id="c" aria-label="文物星河：每颗星是一件文物，语义相近的聚成星团"></canvas>
+<div class="veil"></div>
+<div id="labels"></div>
+<header class="head"><h1>星河</h1><p id="lede">文物按题材、器用、材质与年代的亲缘聚成星团。</p></header>
+<nav class="modes" aria-label="排列方式"><button data-mode="sem" aria-pressed="true">语义星团</button><button data-mode="time" aria-pressed="false">时间螺旋</button></nav>
+<div class="hint" id="hint">拖动旋转 · 滚轮缩放 · 点星看文物</div>
+<div class="links"><span>连 星</span><div class="chips" id="chips" role="group" aria-label="把同一题材或器用的文物连成星座"></div></div>
+<div id="tip" role="status"><img alt=""><div><b></b><span></span></div></div>
+<aside id="card" aria-live="polite"></aside>
+<div class="load" id="load">星河展开中</div>
+<div class="nogl" id="nogl">此浏览器无法显示三维星河（需要 WebGL）。</div>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const mobile=innerWidth<760;
+const embedded=window.parent!==window;
+
+let G;try{G=await (await fetch('galaxy.json',{cache:'no-store'})).json()}catch(e){$('#load').textContent='星图数据读取失败';throw e}
+const S=G.stars,N=S.length;
+$('#lede').innerHTML=`<b>${N}</b> 件文物，按题材、器用、材质与年代的亲缘聚成星团。`;
+
+const canvas=$('#c');
+let renderer;try{renderer=new THREE.WebGLRenderer({canvas,antialias:false,powerPreference:'high-performance'})}catch(e){$('#nogl').style.display='grid';$('#load').remove();throw e}
+const DPR=Math.min(devicePixelRatio,mobile?2:1.75);
+renderer.setPixelRatio(DPR);renderer.setSize(innerWidth,innerHeight);renderer.setClearColor(0x000000);
+const scene=new THREE.Scene();scene.fog=null;
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,0.5,4000);
+const portrait=innerWidth/innerHeight<1;const HOME=new THREE.Vector3(0,-118,92).multiplyScalar(portrait?1.75:1),FAR=new THREE.Vector3(0,-620,520);
+camera.position.copy(reduce?HOME:FAR);
+const controls=new OrbitControls(camera,canvas);
+controls.enableDamping=true;controls.dampingFactor=.06;controls.rotateSpeed=.55;controls.zoomSpeed=.8;controls.minDistance=18;controls.maxDistance=520;controls.enablePan=true;controls.panSpeed=.6;
+controls.autoRotate=!reduce;controls.autoRotateSpeed=.28;
+const galaxy=new THREE.Group();scene.add(galaxy);
+
+/* ---------- textures ---------- */
+function glowTex(stops,size=128){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');const g=x.createRadialGradient(size/2,size/2,0,size/2,size/2,size/2);stops.forEach(([o,col])=>g.addColorStop(o,col));x.fillStyle=g;x.fillRect(0,0,size,size);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+const nebTex=glowTex([[0,'rgba(255,255,255,.55)'],[.25,'rgba(255,255,255,.22)'],[.6,'rgba(255,255,255,.05)'],[1,'rgba(255,255,255,0)']],256);
+
+/* ---------- background: deep star field ---------- */
+{const n=mobile?1800:4200,p=new Float32Array(n*3),c=new Float32Array(n*3),sz=new Float32Array(n);
+ for(let i=0;i<n;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,r=900+Math.random()*1600,s=Math.sqrt(1-u*u);p.set([r*s*Math.cos(a),r*s*Math.sin(a),r*u],i*3);const w=.55+Math.random()*.45,t=Math.random();c.set(t<.2?[w*.75,w*.85,w]:t<.5?[w,w*.88,w*.72]:[w,w,w*.95],i*3);sz[i]=Math.random()<.04?3.2:1+Math.random()*1.4}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('color',new THREE.BufferAttribute(c,3));g.setAttribute('size',new THREE.BufferAttribute(sz,1));
+ scene.add(new THREE.Points(g,new THREE.ShaderMaterial({uniforms:{pxr:{value:DPR}},vertexShader:`uniform float pxr;attribute float size;varying vec3 vC;void main(){vC=color;gl_PointSize=size*pxr;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`varying vec3 vC;void main(){float d=length(gl_PointCoord-.5);float a=smoothstep(.5,.0,d);gl_FragColor=vec4(vC*a*.55,1.);}`,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})))}
+
+/* ---------- galactic dust along spiral arms ---------- */
+const dustU={time:{value:0},pxr:{value:DPR},fade:{value:1}};
+{const n=mobile?14000:38000,p=new Float32Array(n*3),c=new Float32Array(n*3),sz=new Float32Array(n),sd=new Float32Array(n);
+ const warm=new THREE.Color('#ffcf94'),cool=new THREE.Color('#8fb4ff'),rose=new THREE.Color('#e88a73'),core=new THREE.Color('#fff1d6'),tmp=new THREE.Color();
+ const arms=3;
+ for(let i=0;i<n;i++){
+  const inBulge=Math.random()<.16;let x,y,z,r;
+  if(inBulge){r=Math.pow(Math.random(),1.4)*28;const a=Math.random()*Math.PI*2,u=Math.random()*2-1,q=Math.sqrt(1-u*u);x=r*q*Math.cos(a);y=r*q*Math.sin(a);z=r*u*.42;tmp.copy(core).lerp(warm,r/28)}
+  else{r=8+Math.pow(Math.random(),.75)*150;const arm=i%arms,base=arm/arms*Math.PI*2,tw=r*.04;const spread=(Math.random()-.5)*(.38+r/260)+(Math.random()-.5)*Math.random()*.9;const a=base+tw+spread;
+   x=r*Math.cos(a);y=r*Math.sin(a);z=(Math.random()-.5)*(6-r/40)*(Math.random()*.8+.2);
+   const k=Math.min(1,r/150);tmp.copy(warm).lerp(Math.random()<.35?cool:rose,k*(.5+Math.random()*.5))}
+  p.set([x,y,z],i*3);const b=.35+Math.random()*.65;c.set([tmp.r*b,tmp.g*b,tmp.b*b],i*3);sz[i]=Math.random()<.015?3.4:.7+Math.random()*1.6;sd[i]=Math.random()}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setAttribute('color',new THREE.BufferAttribute(c,3));g.setAttribute('size',new THREE.BufferAttribute(sz,1));g.setAttribute('seed',new THREE.BufferAttribute(sd,1));
+ const m=new THREE.ShaderMaterial({uniforms:dustU,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  vertexShader:`attribute float size;attribute float seed;uniform float time,pxr;varying vec3 vC;void main(){vC=color*(.75+.25*sin(time*.8+seed*40.));vec4 mv=modelViewMatrix*vec4(position,1.);gl_PointSize=min(size*pxr*(180./-mv.z),3.2*pxr);gl_Position=projectionMatrix*mv;}`,
+  fragmentShader:`uniform float fade;varying vec3 vC;void main(){float d=length(gl_PointCoord-.5);float a=exp(-d*d*22.);gl_FragColor=vec4(vC*a*.34*fade,1.);}`});
+ galaxy.add(new THREE.Points(g,m))}
+
+/* ---------- nebulae at the semantic clusters ---------- */
+const hex2c=h=>new THREE.Color(h);
+const nebulae=[];
+G.clusters.forEach((cl,i)=>{const idx=S.map((s,j)=>s.cl===i?j:-1).filter(j=>j>=0);const col=new THREE.Color(0,0,0);idx.forEach(j=>col.add(hex2c(S[j].col)));col.multiplyScalar(1/idx.length);
+ const hsl={};col.getHSL(hsl);col.setHSL(hsl.h,Math.min(1,hsl.s*2.2+.3),.5);
+ for(let k=0;k<3;k++){const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:nebTex,color:col,transparent:true,opacity:.0,depthWrite:false,blending:THREE.AdditiveBlending}));
+  const s=(26+Math.sqrt(idx.length)*6)*(1-k*.22);sp.scale.set(s,s*.8,1);sp.position.set(cl.p[0]+(Math.random()-.5)*14,cl.p[1]+(Math.random()-.5)*14,cl.p[2]+(Math.random()-.5)*4);sp.userData.base=.085-k*.02;galaxy.add(sp);nebulae.push(sp)}});
+
+/* ---------- the stars: one per object ---------- */
+const posA=new Float32Array(N*3),posB=new Float32Array(N*3),col=new Float32Array(N*3),size=new Float32Array(N),seed=new Float32Array(N),hl=new Float32Array(N).fill(1);
+S.forEach((s,i)=>{posA.set(s.g,i*3);posB.set(s.t,i*3);const c=hex2c(s.col),h={};c.getHSL(h);c.setHSL(h.h,Math.min(1,h.s*1.35+.08),Math.max(.62,Math.min(.82,h.l+.25)));col.set([c.r,c.g,c.b],i*3);
+ size[i]=5.2+Math.random()*2.2;seed[i]=Math.random()});
+const sg=new THREE.BufferGeometry();
+sg.setAttribute('position',new THREE.BufferAttribute(posA.slice(),3));
+sg.setAttribute('posA',new THREE.BufferAttribute(posA,3));sg.setAttribute('posB',new THREE.BufferAttribute(posB,3));
+sg.setAttribute('color',new THREE.BufferAttribute(col,3));sg.setAttribute('size',new THREE.BufferAttribute(size,1));sg.setAttribute('seed',new THREE.BufferAttribute(seed,1));
+const hlAttr=new THREE.BufferAttribute(hl,1);hlAttr.setUsage(THREE.DynamicDrawUsage);sg.setAttribute('hl',hlAttr);
+sg.boundingSphere=new THREE.Sphere(new THREE.Vector3(),400);
+const starU={time:{value:0},pxr:{value:DPR},mixT:{value:0},ignite:{value:reduce?1:0},hot:{value:-1},sel:{value:-1}};
+const starMat=new THREE.ShaderMaterial({uniforms:starU,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+ vertexShader:`attribute vec3 posA;attribute vec3 posB;attribute float size;attribute float seed;attribute float hl;
+ uniform float time,pxr,mixT,ignite,hot,sel;varying vec3 vC;varying float vHl;varying float vFocus;
+ float stagger(float t,float s){return smoothstep(0.,1.,clamp(t*1.7-s*.7,0.,1.));}
+ void main(){float k=stagger(mixT,seed);vec3 p=mix(posA,posB,k);
+  float arc=sin(k*3.14159)*(10.+seed*16.);p.z+=arc;
+  float id=float(gl_VertexID);float isHot=step(abs(id-hot),.5);float isSel=step(abs(id-sel),.5);vFocus=max(isHot,isSel);
+  float on=clamp(ignite*1.6-seed*.6,0.,1.);
+  float tw=.82+.18*sin(time*(1.3+seed*2.)+seed*60.);
+  vec4 mv=modelViewMatrix*vec4(p,1.);
+  float s=size*(.55+.45*hl)*on*(1.+vFocus*(.9+.25*sin(time*4.)));
+  gl_PointSize=min(s*pxr*(150./-mv.z)*tw,46.*pxr);gl_Position=projectionMatrix*mv;
+  vC=color;vHl=hl*on;}`,
+ fragmentShader:`varying vec3 vC;varying float vHl;varying float vFocus;
+ void main(){vec2 q=gl_PointCoord-.5;float d=length(q);
+  float core=exp(-d*d*90.);float halo=exp(-d*7.5)*.42;
+  float spike=(exp(-abs(q.x)*55.)*exp(-abs(q.y)*7.)+exp(-abs(q.y)*55.)*exp(-abs(q.x)*7.))*.35*(.4+vFocus);
+  float a=(core*1.6+halo+spike)*smoothstep(.5,.35,d);
+  vec3 c=mix(vC,vec3(1.,.97,.9),core*.7);
+  float b=vHl>1.5?1.5:(vHl<.5?.14:.92);
+  gl_FragColor=vec4(c*a*b,1.);}`});
+const stars=new THREE.Points(sg,starMat);stars.frustumCulled=false;galaxy.add(stars);
+
+/* ---------- constellation lines ---------- */
+const lineMat=new THREE.LineBasicMaterial({color:0xd9b77a,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false});
+const lineGeo=new THREE.BufferGeometry();const lines=new THREE.LineSegments(lineGeo,lineMat);galaxy.add(lines);
+let linePairs=[];
+
+/* ---------- post ---------- */
+const composer=new EffectComposer(renderer);composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),mobile?.7:.85,.55,.22);composer.addPass(bloom);composer.addPass(new OutputPass());
+
+/* ---------- state ---------- */
+let mode='sem',mixTarget=0,activeTag=null,selected=-1,hovered=-1,tAnim=0;
+const cur=new Float32Array(N*3);
+function stagger(t,s){const x=Math.min(1,Math.max(0,t*1.7-s*.7));return x*x*(3-2*x)}
+function updateCPU(){const t=starU.mixT.value;for(let i=0;i<N;i++){const k=stagger(t,seed[i]);for(let a=0;a<3;a++)cur[i*3+a]=posA[i*3+a]+(posB[i*3+a]-posA[i*3+a])*k;cur[i*3+2]+=Math.sin(k*Math.PI)*(10+seed[i]*16)}}
+const v3=new THREE.Vector3();
+function worldOf(i,out=v3){return out.set(cur[i*3],cur[i*3+1],cur[i*3+2]).applyMatrix4(galaxy.matrixWorld)}
+function screenOf(i){const p=worldOf(i).project(camera);return [(p.x+1)/2*innerWidth,(1-p.y)/2*innerHeight,p.z]}
+
+/* ---------- labels ---------- */
+const labWrap=$('#labels');
+const clLabels=G.clusters.map((c,i)=>{const el=document.createElement('div');el.className='cl';const name=c.tags.length?c.tags.slice(0,2).map(t=>({'玉':'玉器','金':'金器','瓷':'瓷器'}[t]||t)).join(' · '):c.era+'器物';el.innerHTML=`<b>${esc(name)}</b><small>${c.n} 件 · 多为${esc(c.era)}</small>`;labWrap.appendChild(el);return {el,p:new THREE.Vector3(...c.p)}});
+const eraLabels=G.eras.map(e=>{const el=document.createElement('div');el.className='cl era';el.innerHTML=`<b>${esc(e.e)}</b>`;labWrap.appendChild(el);return {el,p:new THREE.Vector3(...e.p)}});
+const nearEls=[];for(let i=0;i<(mobile?0:7);i++){const d=document.createElement('div');d.className='near';d.innerHTML='<img alt="">';labWrap.appendChild(d);nearEls.push(d)}
+
+/* ---------- chips (constellations) ---------- */
+const count=f=>{const m=new Map();S.forEach(s=>s.tags[f].forEach(t=>m.set(t,(m.get(t)||0)+1)));return [...m].filter(([,n])=>n>=3).sort((a,b)=>b[1]-a[1])};
+const MOT=count('题材').slice(0,12),USE=count('器用').slice(0,10),MAT=count('材质').slice(0,6);
+$('#chips').innerHTML=[['题材',MOT],['器用',USE],['材质',MAT]].map(([f,list],gi)=>(gi?'<i></i>':'')+list.map(([t,n])=>`<button data-f="${f}" data-t="${esc(t)}" aria-pressed="false">${esc(t)}<small>${n}</small></button>`).join('')).join('');
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;setTag(activeTag&&activeTag.t===b.dataset.t&&activeTag.f===b.dataset.f?null:{f:b.dataset.f,t:b.dataset.t})});
+
+function setTag(tag){activeTag=tag;
+ document.querySelectorAll('#chips button').forEach(b=>b.setAttribute('aria-pressed',String(!!tag&&b.dataset.t===tag.t&&b.dataset.f===tag.f)));
+ const ids=tag?S.map((s,i)=>s.tags[tag.f].includes(tag.t)?i:-1).filter(i=>i>=0):[];
+ for(let i=0;i<N;i++)hl[i]=tag?(ids.includes(i)?2:.25):1;hlAttr.needsUpdate=true;
+ buildLines(ids);
+ if(tag&&ids.length){const c=new THREE.Vector3();ids.forEach(i=>c.add(worldOf(i,new THREE.Vector3())));c.multiplyScalar(1/ids.length);flyTo(c,Math.max(90,Math.min(220,60+ids.length*2.2)))}
+}
+function buildLines(ids){linePairs=[];
+ if(ids.length>1){const P=ids.map(i=>[cur[i*3],cur[i*3+1],cur[i*3+2]]);const inT=new Array(ids.length).fill(false),best=new Array(ids.length).fill(Infinity),par=new Array(ids.length).fill(-1);best[0]=0;
+  for(let it=0;it<ids.length;it++){let u=-1;for(let j=0;j<ids.length;j++)if(!inT[j]&&(u<0||best[j]<best[u]))u=j;inT[u]=true;if(par[u]>=0)linePairs.push([ids[u],ids[par[u]]]);
+   for(let j=0;j<ids.length;j++)if(!inT[j]){const d=(P[u][0]-P[j][0])**2+(P[u][1]-P[j][1])**2+(P[u][2]-P[j][2])**2;if(d<best[j]){best[j]=d;par[j]=u}}}}
+ lineGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(Math.max(1,linePairs.length)*6),3));refreshLines()}
+function refreshLines(){if(!linePairs.length)return;const a=lineGeo.attributes.position.array;linePairs.forEach(([i,j],k)=>{a.set([cur[i*3],cur[i*3+1],cur[i*3+2],cur[j*3],cur[j*3+1],cur[j*3+2]],k*6)});lineGeo.attributes.position.needsUpdate=true;lineGeo.computeBoundingSphere()}
+
+/* ---------- camera flights ---------- */
+let flight=null;
+function flyTo(target,dist,dur=1.6){const dir=camera.position.clone().sub(controls.target).normalize();flight={t:0,dur,fromP:camera.position.clone(),fromT:controls.target.clone(),toT:target.clone(),toP:target.clone().add(dir.multiplyScalar(dist))}}
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+/* ---------- modes ---------- */
+document.querySelector('.modes').addEventListener('click',e=>{const b=e.target.closest('[data-mode]');if(!b)return;setMode(b.dataset.mode)});
+function setMode(m){if(m===mode)return;mode=m;mixTarget=m==='time'?1:0;document.querySelectorAll('.modes button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
+ $('#lede').innerHTML=m==='time'?`由内而外：新石器时代到近现代，<b>${N}</b> 件文物沿时间盘旋而出。`:`<b>${N}</b> 件文物，按题材、器用、材质与年代的亲缘聚成星团。`;
+ flyTo(new THREE.Vector3(),(m==='time'?185:150)*(portrait?1.75:1),2.2)}
+
+/* ---------- selection card ---------- */
+const card=$('#card');
+function tagsHTML(s){return ['题材','器用','材质'].map(f=>s.tags[f].length?`<em>${f}</em>`+s.tags[f].map(t=>`<button data-f="${f}" data-t="${esc(t)}">${esc(t)}</button>`).join(''):'').join('')}
+function select(i,fly=true){selected=i;starU.sel.value=i;if(i<0){card.classList.remove('on');return}
+ const s=S[i];
+ const sib=S.map((o,j)=>[o,j]).filter(([o,j])=>j!==i).map(([o,j])=>[j,(cur[j*3]-cur[i*3])**2+(cur[j*3+1]-cur[i*3+1])**2+(cur[j*3+2]-cur[i*3+2])**2]).sort((a,b)=>a[1]-b[1]).slice(0,5);
+ card.innerHTML=`<button class="ph" data-open="${esc(s.k)}" aria-label="查看${esc(s.n)}大图"><img src="img/h/${esc(s.im)}.webp" alt="${esc(s.n)}"></button><div class="bd"><h2>${esc(s.n)}</h2><div class="meta">${esc(s.e)}${s.m?' · '+esc(s.m):''}${s.cu?' · '+esc(s.cu):''}</div><div class="tg">${tagsHTML(s)}</div>
+  <div class="sib">相邻的星<div>${sib.map(([j])=>`<button data-star="${j}" title="${esc(S[j].n)}" aria-label="${esc(S[j].n)}"><img src="img/s/${esc(S[j].im)}.webp" alt=""></button>`).join('')}</div></div>
+  <div class="act"><button data-open="${esc(s.k)}">查看文物 →</button><button class="x" data-close>收起</button></div></div>`;
+ card.classList.add('on');if(fly)flyTo(worldOf(i,new THREE.Vector3()),mobile?70:46,1.4)}
+card.addEventListener('click',e=>{const o=e.target.closest('[data-open]'),st=e.target.closest('[data-star]'),tg=e.target.closest('[data-t]');
+ if(o)openObject(o.dataset.open);else if(st)select(+st.dataset.star);else if(tg)setTag({f:tg.dataset.f,t:tg.dataset.t});else if(e.target.closest('[data-close]'))select(-1)});
+function openObject(key){if(embedded){parent.postMessage({zjGalaxyOpen:key},location.origin)}else location.href='index.html#color'}
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(selected>=0)select(-1);else if(activeTag)setTag(null)}});
+
+/* ---------- picking ---------- */
+const tip=$('#tip');let down=null;
+function pick(x,y){let best=-1,bd=(mobile?26:18)**2;for(let i=0;i<N;i++){if(activeTag&&hl[i]<.5)continue;const [sx,sy,z]=screenOf(i);if(z>1)continue;const d=(sx-x)**2+(sy-y)**2;if(d<bd){bd=d;best=i}}return best}
+canvas.addEventListener('pointermove',e=>{if(down&&(Math.abs(e.clientX-down[0])+Math.abs(e.clientY-down[1])>5)){canvas.classList.add('drag');down.moved=true}
+ if(e.pointerType!=='mouse')return;const i=pick(e.clientX,e.clientY);if(i!==hovered){hovered=i;starU.hot.value=i;canvas.classList.toggle('hot',i>=0);
+  if(i>=0){const s=S[i];tip.querySelector('img').src=`img/s/${s.im}.webp`;tip.querySelector('b').textContent=s.n;tip.querySelector('span').textContent=`${s.e}${s.m?' · '+s.m:''}`;tip.style.opacity=1}else tip.style.opacity=0}
+ if(i>=0){const w=tip.offsetWidth,h=tip.offsetHeight;tip.style.transform=`translate(${Math.min(innerWidth-w-10,e.clientX+18)}px,${Math.min(innerHeight-h-10,e.clientY+14)}px)`}});
+canvas.addEventListener('pointerleave',()=>{hovered=-1;starU.hot.value=-1;tip.style.opacity=0});
+canvas.addEventListener('pointerdown',e=>{down=[e.clientX,e.clientY];idle=0;hideHint()});
+canvas.addEventListener('pointerup',e=>{canvas.classList.remove('drag');const moved=down&&down.moved;down=null;if(moved)return;const i=pick(e.clientX,e.clientY);if(i>=0)select(i);else if(selected>=0)select(-1)});
+canvas.addEventListener('dblclick',e=>{const i=pick(e.clientX,e.clientY);if(i>=0)openObject(S[i].k)});
+canvas.addEventListener('wheel',()=>{idle=0;hideHint()},{passive:true});
+let hintT=setTimeout(hideHint,9000);function hideHint(){$('#hint').style.opacity=0}
+
+/* ---------- resize ---------- */
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);bloom.setSize(innerWidth,innerHeight)});
+
+/* ---------- loop ---------- */
+const clock=new THREE.Clock();let idle=0,intro=reduce?1:0;
+function frame(){const dt=Math.min(.05,clock.getDelta()),t=clock.elapsedTime;
+ starU.time.value=t;dustU.time.value=t;
+ if(intro<1){intro=Math.min(1,intro+dt/3.4);const k=ease(intro);camera.position.lerpVectors(FAR,HOME,k);starU.ignite.value=Math.min(1,intro*1.25)}
+ const m=starU.mixT.value;if(Math.abs(m-mixTarget)>.0005){starU.mixT.value+= (mixTarget-m)*Math.min(1,dt*1.3)+Math.sign(mixTarget-m)*dt*.05;starU.mixT.value=Math.max(0,Math.min(1,starU.mixT.value))}
+ updateCPU();refreshLines();
+ lineMat.opacity+=((activeTag?.42+.12*Math.sin(t*2):0)-lineMat.opacity)*Math.min(1,dt*4);
+ const nebOn=(1-starU.mixT.value)*(activeTag?.45:1);nebulae.forEach(n=>n.material.opacity=n.userData.base*nebOn*starU.ignite.value);
+ dustU.fade.value=.6+.4*(1-starU.mixT.value*.5);
+ galaxy.rotation.z+=dt*.006;
+ if(flight){flight.t+=dt/flight.dur;const k=ease(Math.min(1,flight.t));camera.position.lerpVectors(flight.fromP,flight.toP,k);controls.target.lerpVectors(flight.fromT,flight.toT,k);if(flight.t>=1)flight=null}
+ idle+=dt;controls.autoRotate=!reduce&&selected<0&&idle>2.5;
+ controls.update();galaxy.updateMatrixWorld();
+ drawLabels(t);
+ composer.render();requestAnimationFrame(frame)}
+const lv=new THREE.Vector3();
+function placeLabel(L,p,op){lv.copy(p).applyMatrix4(galaxy.matrixWorld);const d=camera.position.distanceTo(lv);lv.project(camera);
+ if(lv.z>1||op<=.01){L.el.style.opacity=0;return}const x=(lv.x+1)/2*innerWidth,y=(1-lv.y)/2*innerHeight;const sc=Math.max(.7,Math.min(1.25,150/d));
+ L.el.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%) scale(${sc.toFixed(3)})`;L.el.style.opacity=(op*Math.min(1,Math.max(0,(d-25)/40))).toFixed(2)}
+function drawLabels(){const m=starU.mixT.value,ig=starU.ignite.value;
+ clLabels.forEach(L=>placeLabel(L,L.p,(1-m)*ig*(activeTag?.25:selected>=0?.45:.95)));
+ eraLabels.forEach(L=>placeLabel(L,L.p,m*ig));
+ // close-up: show the photographs of the nearest stars
+ if(nearEls.length){const camd=camera.position.distanceTo(controls.target);const show=camd<85&&!flight;let near=[];
+  if(show){for(let i=0;i<N;i++){if(i===selected)continue;const w=worldOf(i);const d=camera.position.distanceTo(w);const p=w.project(camera);if(p.z<1&&Math.abs(p.x)<.9&&Math.abs(p.y)<.85)near.push([i,d,p.x,p.y])}near.sort((a,b)=>a[1]-b[1]);const kept=[];for(const n of near){const x=(n[2]+1)/2*innerWidth,y=(1-n[3])/2*innerHeight;if(kept.every(k=>Math.hypot(k[4]-x,k[5]-y)>78)){kept.push([...n,x,y]);if(kept.length>=nearEls.length)break}}near=kept}
+  nearEls.forEach((el,k)=>{const n=near[k];if(!n){el.style.opacity=0;return}const [i,d,px,py]=n;const img=el.firstChild;const src=`img/s/${S[i].im}.webp`;if(img.getAttribute('src')!==src)img.src=src;
+   const sc=Math.max(.45,Math.min(1.4,32/d));el.style.transform=`translate(${(px+1)/2*innerWidth}px,${(1-py)/2*innerHeight}px) translate(-50%,calc(-100% - 14px)) scale(${sc.toFixed(2)})`;el.style.opacity=Math.min(.92,(85-camd)/30).toFixed(2)})}}
+updateCPU();
+requestAnimationFrame(()=>{$('#load').style.opacity=0;setTimeout(()=>$('#load').remove(),1300)});
+frame();
+window.__galaxy={select,setTag,setMode,S};
+</script></body></html>

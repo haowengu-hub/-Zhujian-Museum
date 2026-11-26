@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>文脉 · 时空图谱</title><link rel="stylesheet" href="fonts/fonts.css"><link rel="stylesheet" href="culture-atlas.css?v=folio-1"></head>
+<body><div class="atlas-shell">
+<header class="masthead">
+ <div class="title"><span class="eyebrow">竹间影像 · 文脉地志</span><h1>文脉<i>·</i>时空</h1></div>
+ <nav id="filters" class="filters" aria-label="文脉类型"></nav>
+ <span id="status" class="status" role="status">正在加载图谱</span>
+</header>
+<main class="atlas-main">
+ <article class="folio" id="detail" aria-live="polite"><p class="loading">正在展开图志…</p></article>
+ <figure class="cartography"><svg id="map" viewBox="290 175 620 540" aria-label="文化核心区域与活动中心示意地图"></svg><figcaption><span id="mapPlace">核心地域</span><span class="map-note">今地名参照 · 光点为核心区示意，非历史边界</span></figcaption></figure>
+</main>
+<footer class="timefolio">
+ <div class="time-top"><nav class="periods" aria-label="选择时代" id="periods"></nav><div class="more-controls"><details class="catalog"><summary>文脉目录 <span id="catalogCount"></span></summary><div id="cultureList" class="catalog-list"></div></details><details class="comparison"><summary>年代对照</summary><div id="tracks" class="tracks" aria-label="文脉年代轴"></div></details></div></div>
+ <section class="time-controls" aria-label="选择年代">
+  <div class="time-label"><span class="eyebrow">时间切片</span><b id="yearLabel">全时期</b></div>
+  <div class="axis-wrap"><div class="ticks" id="ticks" aria-hidden="true"></div><div class="axis-band" id="axisBand" aria-hidden="true"><span id="axisName"></span></div><input id="year" aria-label="查看某一年的文脉" type="range" min="-4500" max="1911" value="-2200" step="10"><div class="scale" id="scale"></div></div>
+  <button id="allTime" class="reset-time">显示整段</button>
+ </section>
+</footer>
+</div><script src="culture-atlas.js?v=folio-1"></script></body></html>
