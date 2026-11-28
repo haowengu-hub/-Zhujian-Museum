@@ -1065,14 +1065,22 @@ function mapFit(w,h){const [x0,y0,x1,y1]=DOORGEO.b,p=Math.min(w,h)*.08,s=Math.mi
 function landLayer(c,w,h,k=1){const f=mapFit(w,h);c.save();c.translate(f.ox,f.oy);c.scale(f.s,f.s);c.fillStyle=`rgba(236,227,210,${.035*k})`;c.fill(DOORPATH);c.lineWidth=.8/f.s;c.strokeStyle=`rgba(236,227,210,${.17*k})`;c.stroke(DOORPATH);c.restore();return f}
 const doorDraw={
   spectrum(){const a=D.map(o=>mainOf(o)[0]).filter(h=>/^#[0-9a-f]{6}$/i.test(h||'')).map(h=>[h,...hslOf(h)]);
-    const ch=a.filter(x=>x[2]>.14&&x[3]>.08&&x[3]<.92).sort((p,q)=>((p[1]+330)%360)-((q[1]+330)%360)||p[3]-q[3]),gr=a.filter(x=>!ch.includes(x)).sort((p,q)=>q[3]-p[3]);const S=ch.concat(gr).map(x=>x[0]),N=S.map((_,i)=>{const x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)});
-    return (c,w,h,t)=>{c.clearRect(0,0,w,h);const n=S.length,bw=w/n,tw=Math.max(.8,bw*.8),T=Math.PI*2;
-      for(let i=0;i<n;i++){const k=i/n,v=.5+.1*Math.sin(k*T*1.15+t*.00023)+.07*Math.sin(k*T*3.3-t*.00037+1.3)+.3*(N[i]-.5)+.06*Math.sin(t*.0011+N[i]*T),len=h*(.38+.42*v),x=i*bw;
-        const g=c.createLinearGradient(0,0,0,len);g.addColorStop(0,S[i]);g.addColorStop(.62,S[i]);g.addColorStop(1,S[i]+'00');c.globalAlpha=.92;c.fillStyle=g;c.fillRect(x,0,tw,len)}
-      c.globalAlpha=1;c.globalCompositeOperation='source-atop';const sx=((t*.045)%(w*1.8))-w*.4,sg=c.createLinearGradient(sx,0,sx+w*.3,0);sg.addColorStop(0,'rgba(255,248,236,0)');sg.addColorStop(.5,'rgba(255,248,236,.16)');sg.addColorStop(1,'rgba(255,248,236,0)');c.fillStyle=sg;c.fillRect(0,0,w,h);
-      const top=c.createLinearGradient(0,0,0,h*.18);top.addColorStop(0,'rgba(0,0,0,.35)');top.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=top;c.fillRect(0,0,w,h*.18);c.globalCompositeOperation='source-over';
-      c.fillStyle='rgba(201,166,107,.55)';c.fillRect(0,0,w,1);
-      const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(4,3,3,0)');g.addColorStop(.62,'rgba(4,3,3,0)');g.addColorStop(.9,'rgba(4,3,3,.9)');c.fillStyle=g;c.fillRect(0,0,w,h)}},
+    /* each relic's main colour as one point: hue runs left to right, light to dark top to bottom, greys gathered at the right; a slow beam of light passes over them */
+    const rnd=i=>{const x=Math.sin(i*12.9898+.7)*43758.5453;return x-Math.floor(x)};
+    const ch=a.filter(x=>x[2]>.14&&x[3]>.08&&x[3]<.92),gr=a.filter(x=>!ch.includes(x));
+    ch.sort((p,q)=>((p[1]+330)%360)-((q[1]+330)%360));const P=[];ch.forEach((x,i)=>P.push({c:x[0],u:.05+.8*(i/Math.max(1,ch.length-1))+(rnd(i)-.5)*.01,v:.1+.62*(1-x[3])+(rnd(i+500)-.5)*.03,r:.9+1.3*x[2]}));
+    gr.forEach((x,i)=>P.push({c:x[0],u:.885+.075*rnd(i+900),v:.1+.62*(1-x[3])+(rnd(i+1300)-.5)*.03,r:.9}));
+    P.forEach(p=>{const n=parseInt(p.c.slice(1),16);p.rgb=[n>>16,(n>>8)&255,n&255].join(',')});
+    return (c,w,h,t)=>{c.fillStyle='#040303';c.fillRect(0,0,w,h);
+      const bx=((t*.000035)%1.5)-.25,bw=.13,s=Math.min(1.6,Math.max(1,w/420));
+      const beam=c.createLinearGradient((bx-bw*1.6)*w,0,(bx+bw*1.6)*w,0);beam.addColorStop(0,'rgba(255,236,206,0)');beam.addColorStop(.5,'rgba(255,236,206,.045)');beam.addColorStop(1,'rgba(255,236,206,0)');c.fillStyle=beam;c.fillRect(0,0,w,h);
+      c.globalCompositeOperation='lighter';
+      for(const p of P){const d=(p.u-bx)/bw,k=Math.exp(-d*d),x=p.u*w,y=p.v*h,r=p.r*s*(1+.25*k);
+        if(k>.25){const g=c.createRadialGradient(x,y,0,x,y,r*3.5);g.addColorStop(0,`rgba(${p.rgb},${.13*k})`);g.addColorStop(1,`rgba(${p.rgb},0)`);c.fillStyle=g;c.fillRect(x-r*3.5,y-r*3.5,r*7,r*7)}
+        c.fillStyle=`rgba(${p.rgb},${.42+.58*k})`;c.beginPath();c.arc(x,y,r,0,6.3);c.fill()}
+      c.globalCompositeOperation='source-over';
+      c.strokeStyle='rgba(201,166,107,.22)';c.lineWidth=1;c.beginPath();c.moveTo(w*.05,h*.79+.5);c.lineTo(w*.96,h*.79+.5);c.stroke();
+      const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(4,3,3,0)');g.addColorStop(.66,'rgba(4,3,3,0)');g.addColorStop(.92,'rgba(4,3,3,.85)');c.fillStyle=g;c.fillRect(0,0,w,h)}},
   culture(){let spots=[];fetch('culture-profiles.json').then(r=>r.json()).then(P=>{const col={'考古文化':'201,166,107','窑口':'150,186,170','艺术群体':'196,140,120','同一原址':'255,236,206'};
       spots=P.flatMap((p,i)=>(p.areas||[]).map(a=>({x:a[0],y:a[1],r:Math.max(a[2]||10,a[3]||10),c:col[p.kind]||col['考古文化'],ph:i*1.9})))}).catch(()=>{});
     return (c,w,h,t)=>{c.clearRect(0,0,w,h);const f=landLayer(c,w,h);c.globalCompositeOperation='lighter';
