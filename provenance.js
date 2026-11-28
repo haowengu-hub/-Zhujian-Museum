@@ -5,7 +5,7 @@ const routeSVG=document.createElementNS('http://www.w3.org/2000/svg','svg');
 routeSVG.id='provenance';routeSVG.setAttribute('viewBox','0 0 1000 780');
 $('#topB').insertBefore(routeSVG,$('#lamps'));
 const routePanel=document.createElement('div');routePanel.id='routePanel';
-routePanel.innerHTML='<button id="routeToggle" aria-pressed="true">来处 <span>→</span> 现藏</button><small class="route-key"><i class="dig"></i>出土地<i class="made"></i>生产地 · 窑口</small><small id="routeCount" role="status">正在加载连线</small><small>城市示意；两者都有时只画出土地</small>';
+routePanel.innerHTML='<button id="routeToggle" aria-pressed="true">来处 <span>→</span> 现藏</button><small class="route-key"><i class="dig"></i>出土地<i class="made"></i>生产地 · 窑口</small><small id="routeCount" role="status">正在加载连线</small>';
 $('#stage').appendChild(routePanel);
 const routeStyle=document.createElement('style');routeStyle.textContent=`
 #provenance{pointer-events:none;overflow:visible}
