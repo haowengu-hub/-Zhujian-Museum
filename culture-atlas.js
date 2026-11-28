@@ -3,7 +3,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const periods=[['全时期',-4500,1911],['新石器',-4500,-1800],['先秦秦汉',-1800,220],['魏晋隋唐',220,960],['宋元',960,1368],['明',1368,1644],['清',1644,1911]];
 let profiles=[],items=[],geo=null,period=0,kind='全部',year=null,selected='后石家河文化';
 let detailSignature='',yearFrame=0;
-try{const v=JSON.parse(sessionStorage.getItem('zj-culture-view')||'null');if(v){period=Math.max(0,Math.min(periods.length-1,+v.period||0));kind=['全部','考古文化','窑口','艺术群体'].includes(v.kind)?v.kind:'全部';year=Number.isFinite(v.year)?v.year:null;selected=String(v.selected||selected)}}catch{}
+try{const v=JSON.parse(sessionStorage.getItem('zj-culture-view')||'null');if(v){period=Math.max(0,Math.min(periods.length-1,+v.period||0));kind=['全部','考古文化','窑口','艺术群体','同一原址','墓葬'].includes(v.kind)?v.kind:'全部';year=Number.isFinite(v.year)?v.year:null;selected=String(v.selected||selected)}}catch{}
 const yearText=y=>y===0?'公元前后':y<0?'公元前'+Math.abs(y)+'年':'公元'+y+'年';
 const shortYear=y=>y===0?'公元前后':y<0?'前 '+Math.abs(y):String(y);
 const matches=(o,p)=>(o.culture||'').split(/[、，,;；|]/).some(t=>[p.name,...p.aliases].includes(t.trim()));
@@ -23,13 +23,13 @@ function regionMarkup(p){
 }
 function renderDetail(p,visible){
  if(!p){$('#detail').innerHTML='<div class="empty">这个时段暂无可展示的文脉。<button data-reset="1">查看整段年代</button></div>';return}
- const related=items.filter(o=>matches(o,p)),rep=related.find(o=>o.image);
+ const related=items.filter(o=>matches(o,p)),rep=related.find(o=>o.image&&o.key===p.rep)||related.find(o=>o.image);
  const signature=p.name+'|'+related.map(o=>o.key+o.name+o.image).join('|');if(detailSignature===signature&&$('#detail h2'))return;detailSignature=signature;
  const keepOpen=new Set([...document.querySelectorAll('#detail details[open]')].map(d=>d.id));
  const photo=rep?`<figure class="specimen"><button data-key="${esc(rep.key)}" aria-label="查看${esc(rep.name)}"><img src="${esc(rep.image)}" alt="${esc(rep.name)}"></button><figcaption><span class="object-name">${esc(rep.name)}</span><span class="object-museum">${esc(rep.mus)}</span></figcaption></figure>`:'';
  const thumbs=related.filter(o=>o.image&&o!==rep).slice(0,5);
  const works=related.length?`<section class="works"><div class="works-head"><span>相关作品</span><b>${related.length}</b></div>${thumbs.length?`<div class="thumbs">${thumbs.map(o=>`<button data-key="${esc(o.key)}" title="${esc(o.name)}" aria-label="查看${esc(o.name)}"><img src="${esc(o.image)}" alt="" loading="lazy"></button>`).join('')}</div>`:''}${related.length>1?`<details id="relatedWorks" ${keepOpen.has('relatedWorks')?'open':''}><summary>全部作品名录</summary><div id="works" class="related-list">${related.map(o=>`<button data-key="${esc(o.key)}"><span>${esc(o.name)}</span><small>${esc(o.mus||'')}</small></button>`).join('')}</div></details>`:''}</section>`:'';
- $('#detail').innerHTML=`<div class="folio-nav"><span class="serial">${String(profiles.indexOf(p)+1).padStart(2,'0')}<small> / ${String(profiles.length).padStart(2,'0')}</small></span><button data-step="-1" aria-label="上一组文脉"><i>←</i>上一</button><button data-step="1" aria-label="下一组文脉">下一<i>→</i></button></div><span class="kind">${esc(p.kind)}</span><h2>${esc(p.name)}</h2><dl class="facts"><dt>年代</dt><dd>${esc(p.period)}</dd><dt>地域</dt><dd>${esc(p.region)}</dd></dl>${photo}${works}<details id="profileNotes" class="notes" ${keepOpen.has('profileNotes')?'open':''}><summary>说明与依据</summary>${p.intro?`<p>${esc(p.intro)}</p>`:''}${p.note?`<p>${esc(p.note)}</p>`:''}<p>图中光点表示核心区域、窑口产区或艺术活动中心，不代表精确历史边界。</p><p class="source"><a href="${esc(p.source)}" target="_blank" rel="noopener">年代与地域依据 ↗</a></p></details>`;
+ $('#detail').innerHTML=`<div class="folio-nav"><span class="serial">${String(profiles.indexOf(p)+1).padStart(2,'0')}<small> / ${String(profiles.length).padStart(2,'0')}</small></span><button data-step="-1" aria-label="上一组文脉"><i>←</i>上一</button><button data-step="1" aria-label="下一组文脉">下一<i>→</i></button></div><span class="kind">${esc(p.kind)}</span><h2>${esc(p.name)}</h2><dl class="facts"><dt>年代</dt><dd>${esc(p.period)}</dd><dt>地域</dt><dd>${esc(p.region)}</dd></dl>${photo}${works}<details id="profileNotes" class="notes" ${keepOpen.has('profileNotes')?'open':''}><summary>说明与依据</summary>${p.intro?`<p>${esc(p.intro)}</p>`:''}${p.note?`<p>${esc(p.note)}</p>`:''}<p>图中光点表示核心区域、窑口产区或艺术活动中心，不代表精确历史边界。</p>${p.source?`<p class="source"><a href="${esc(p.source)}" target="_blank" rel="noopener">年代与地域依据 ↗</a></p>`:''}</details>`;
 }
 function niceTicks(a,b){const span=b-a,steps=[50,100,200,250,500,1000,2000],max=innerWidth<760?3:7;const st=steps.find(s=>span/s<=max)||2000;const out=[];for(let y=Math.ceil(a/st)*st;y<=b;y+=st)out.push(y);return out}
 function render(){
@@ -38,7 +38,7 @@ function render(){
  const visible=currentProfiles();if(!visible.some(p=>p.name===selected))selected=visible[0]?.name||'';
  const p=profiles.find(p=>p.name===selected);
  $('#periods').innerHTML=periods.map((p,i)=>`<button aria-pressed="${period===i}" data-period="${i}">${p[0]}</button>`).join('');
- $('#filters').innerHTML=['全部','考古文化','窑口','艺术群体'].map(k=>`<button aria-pressed="${kind===k}" data-kind="${k}">${k}</button>`).join('');
+ $('#filters').innerHTML=['全部','考古文化','窑口','艺术群体','同一原址','墓葬'].map(k=>`<button aria-pressed="${kind===k}" data-kind="${k}">${k}</button>`).join('');
  $('#status').textContent=`${visible.length} 组文脉 · ${items.filter(o=>visible.some(p=>matches(o,p))).length} 件作品`;
  $('#catalogCount').textContent=visible.length;
  $('#cultureList').innerHTML=visible.map(p=>`<button data-name="${esc(p.name)}" aria-pressed="${p.name===selected}">${esc(p.name)}${items.some(o=>matches(o,p))?`<small>${items.filter(o=>matches(o,p)).length}</small>`:''}</button>`).join('')||'<p>这个时段暂无文脉，可选择其他年代。</p>';
