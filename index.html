@@ -429,7 +429,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
 .home .txt{display:flex;flex-direction:column;gap:18px}
 /* about: a curator's wall text — vertical title and signature on the left, one reading column on the right */
 .about{grid-row:2;grid-column:1;min-height:0;overflow-y:auto;padding:56px max(32px,env(safe-area-inset-right,0px)) 80px max(32px,env(safe-area-inset-left,0px))}
-.ain{display:grid;grid-template-columns:auto minmax(0,38em);gap:clamp(32px,6vw,96px);justify-content:center;align-items:start;max-width:1180px;margin:0 auto}
+.ain{display:grid;grid-template-columns:auto minmax(0,46em);gap:clamp(32px,6vw,96px);justify-content:center;align-items:start;max-width:1180px;margin:0 auto}
 .aid{position:sticky;top:0;display:flex;align-items:flex-start;gap:18px}
 .about .t{writing-mode:vertical-rl;font-family:var(--f-display);font-weight:900;font-size:clamp(56px,9vh,104px);letter-spacing:.1em;line-height:1.1;margin:0}
 .about .sig{height:min(34vh,280px);width:auto;opacity:.85;margin-top:clamp(60px,10vh,120px)}
@@ -443,11 +443,11 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
 .anum div{display:flex;flex-direction:column;gap:4px}
 .anum dt{font-family:var(--f-display);font-size:26px;font-weight:600;color:#f3ead9;font-variant-numeric:lining-nums}
 .anum dd{margin:0;font-size:12.5px;color:var(--dim);line-height:1.5}
-.ablk{display:grid;grid-template-columns:8.2em minmax(0,1fr);gap:20px;align-items:baseline}
-.ablk h2{white-space:nowrap;font-family:var(--f-display);font-size:16px;font-weight:500;letter-spacing:.24em;color:var(--gilt);margin:0}
+.about{--h2:16px}.ablk{display:grid;grid-template-columns:calc(var(--h2) * 7.9) minmax(0,1fr);gap:20px;align-items:baseline}
+.ablk h2{white-space:nowrap;font-family:var(--f-display);font-size:var(--h2);font-weight:500;letter-spacing:.24em;color:var(--gilt);margin:0}
 .ablk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .ablk .amail{color:#e8dfcd;text-decoration:none;border-bottom:1px solid rgba(201,166,107,.55);font-family:var(--f-latin);font-size:1.08em;letter-spacing:.02em}.ablk .amail:hover{color:var(--gilt)}.ablk li{font-family:var(--f-display);font-size:15.5px;line-height:1.9;color:#d9cfbd;text-wrap:pretty}
-@media(min-width:1600px){.ain{grid-template-columns:auto minmax(0,44em)}.about .lead{font-size:clamp(19px,1.1vw,26px)}.ablk li{font-size:clamp(15.5px,.9vw,21px)}.anum dt{font-size:clamp(26px,1.5vw,38px)}.anum dd{font-size:clamp(12.5px,.7vw,17px)}.about .who{font-size:clamp(30px,1.7vw,44px)}.ablk h2{font-size:clamp(16px,.9vw,22px)}}
+@media(min-width:1600px){.ain{grid-template-columns:auto minmax(0,min(56vw,1240px));max-width:none}.about .lead{font-size:clamp(19px,1.1vw,26px)}.ablk li{font-size:clamp(15.5px,.9vw,21px)}.anum dt{font-size:clamp(26px,1.5vw,38px)}.anum dd{font-size:clamp(12.5px,.7vw,17px)}.about .who{font-size:clamp(30px,1.7vw,44px)}.about{--h2:clamp(16px,.9vw,22px)}}
 @media(max-width:760px){.about{padding:28px 20px 60px}.ain{grid-template-columns:minmax(0,1fr)}.aid{position:static;align-items:center}.about .t{writing-mode:horizontal-tb;font-size:44px}.about .sig{height:56px;margin:0}
   .anum{grid-template-columns:repeat(2,minmax(0,1fr))}.ablk{grid-template-columns:minmax(0,1fr);gap:8px}}
 
@@ -605,7 +605,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
         <header class="ahead">
           <p class="who">竹间浑人<span>桂昊雯</span></p>
           <p class="role">文物摄影师 · 文博自媒体博主</p>
-          <p class="lead">文物摄影，就是给文物打光。这光不只是物理意义上的光，更像 cast light on——带着所有人，从我的镜头去看那些被忽视的文物之美。</p>
+          <p class="lead">文物摄影师，就是一群给文物打光的人。带着所有人，从我的镜头去看那些被忽视的文物之美。</p>
         </header>
         <dl class="anum">
           <div><dt>近百家</dt><dd>国内外博物馆实地拍摄</dd></div>
@@ -625,7 +625,7 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
             <li>星球研究所特约摄影师，视觉中国签约摄影师，微博年度文物票选第一</li>
             <li>担任华中科技大学出版社 7 种国宝图书的摄影指导，包括《最美中国国宝全书》等</li>
             <li>与佳能多次合作；为北京展览馆、武汉博物馆、南京大报恩寺遗址博物馆、盘龙城遗址博物院等多家博物馆拍摄宣传</li>
-            <li>作品授权用于《北京·西城》（新华出版社）、《湖北正在说》、《国宝奇妙屋》、《美丽神州》日历，以及武汉博物馆常设展陈、Rokid 乐奇 AI 眼镜宣传</li>
+            <li>作品授权用于《北京·西城》（新华出版社）、《湖北正在说》、《国宝奇妙屋》、《美丽神州》日历，以及新华社文章、武汉博物馆常设展陈、Rokid 乐奇 AI 眼镜宣传等众多图书出版、媒体宣传、商业产品</li>
           </ul>
         </section>
         <section class="ablk"><h2>流失海外文物</h2>
@@ -637,8 +637,8 @@ dl.f dd button{text-decoration:none}dl.f dd button:hover{text-decoration:underli
         </section>
         <section class="ablk"><h2>媒体</h2>
           <ul>
-            <li>《中国日报》专访与署名文章；《中国青年报》《长江日报》、武汉博物馆、武汉大学专访</li>
-            <li>文章被《青年文摘》《思维与智慧》《意林》《二十一世纪英语报》刊登转载</li>
+            <li>《中国日报》专访，并发表署名文章；《中国青年报》《长江日报》、武汉博物馆、武汉大学专访</li>
+            <li>文章被《青年文摘》《思维与智慧》《意林》《二十一世纪英语报》《中国妇女报》等十余种期刊、报纸刊登转载</li>
           </ul>
         </section>
         <section class="ablk"><h2>自媒体</h2>
